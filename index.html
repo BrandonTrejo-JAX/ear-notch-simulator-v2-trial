@@ -1,437 +1,491 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
-<title>
-JAX Mouse Ear Notch Simulator
-</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JAX Mouse Ear Notch Simulator</title>
 
 <style>
+:root{
+    --bg:#eef2f1;
+    --panel:#ffffff;
+    --ink:#16262e;
+    --muted:#62757d;
+    --line:#d7e0df;
+    --accent:#0f766e;
+    --accent-dark:#0b5a54;
+    --accent-soft:#dff3f0;
+    --blue:#2196F3;
+    --green:#4CAF50;
+    --red:#cc0000;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(22,38,46,.06),0 8px 24px rgba(22,38,46,.07);
+}
+
+*{box-sizing:border-box;}
 
 body{
-    font-family:Arial,sans-serif;
-    background:#f5f5f5;
+    font-family:"Avenir Next","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:
+        radial-gradient(1100px 500px at 50% -200px,#d5ebe8 0%,transparent 70%),
+        var(--bg);
+    color:var(--ink);
     text-align:center;
-    margin:20px;
+    margin:0;
+    padding:24px 16px 32px;
+    min-height:100vh;
 }
 
 h1{
-    margin-bottom:10px;
+    margin:0 0 4px;
+    font-size:30px;
+    letter-spacing:-.02em;
+}
+
+.subtitle{
+    margin:0 0 22px;
+    color:var(--muted);
+    font-size:15px;
+}
+
+h2{
+    margin:0 0 10px;
+    font-size:15px;
+    font-weight:700;
+    color:var(--ink);
 }
 
 button{
-
-    padding:10px 20px;
+    font:inherit;
+    font-weight:600;
+    padding:11px 22px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:var(--panel);
+    color:var(--ink);
     cursor:pointer;
-    margin:5px;
+    margin:4px;
+    transition:background .15s,border-color .15s,transform .1s,box-shadow .15s;
 }
+button:hover:not(:disabled){border-color:var(--accent);background:var(--accent-soft);}
+button:active:not(:disabled){transform:translateY(1px);}
+button:disabled{opacity:.45;cursor:not-allowed;}
+button:focus-visible,select:focus-visible,input:focus-visible + span{
+    outline:3px solid rgba(15,118,110,.35);
+    outline-offset:2px;
+}
+
+.primary{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+}
+.primary:hover:not(:disabled){background:var(--accent-dark);border-color:var(--accent-dark);}
+
+/* ---------- start screen ---------- */
 
 #startScreen{
-
-    margin-top:40px;
+    max-width:560px;
+    margin:0 auto;
+    text-align:left;
 }
 
-#gameContainer{
+.card{
+    background:var(--panel);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:20px 22px;
+    margin-bottom:16px;
+}
 
+.segmented{
+    display:flex;
+    background:#eaf0ef;
+    border-radius:11px;
+    padding:4px;
+    gap:4px;
+}
+.segmented label{flex:1;position:relative;}
+.segmented input{
+    position:absolute;
+    opacity:0;
+    inset:0;
+    cursor:pointer;
+}
+.segmented span{
+    display:block;
+    text-align:center;
+    padding:9px 0;
+    border-radius:8px;
+    font-weight:600;
+    font-size:14px;
+    color:var(--muted);
+    transition:background .15s,color .15s,box-shadow .15s;
+}
+.segmented input:checked + span{
+    background:#fff;
+    color:var(--accent-dark);
+    box-shadow:0 1px 3px rgba(22,38,46,.15);
+}
+
+.hint{
+    margin:8px 2px 0;
+    font-size:13px;
+    color:var(--muted);
+}
+
+select{
+    font:inherit;
+    width:100%;
+    padding:11px 12px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:#fff;
+    color:var(--ink);
+    cursor:pointer;
+}
+
+.startBtnWrap{text-align:center;margin:6px 0 20px;}
+#startBtn{font-size:17px;padding:14px 40px;margin:0;}
+
+#practiceNumbers{
     display:none;
+    margin-top:14px;
+    text-align:center;
+}
+.chip{
+    display:inline-block;
+    margin:3px;
+    padding:8px 16px;
+    border-radius:999px;
+    background:var(--accent-soft);
+    color:var(--accent-dark);
+    font-size:20px;
+    font-weight:700;
+    font-variant-numeric:tabular-nums;
 }
 
-#summary{
+#gameContainer{display:none;max-width:1120px;margin:0 auto;}
+#summary{display:none;max-width:520px;margin:0 auto;}
 
-    display:none;
-}
+/* ---------- top bar ---------- */
 
 #topBar{
-
     display:flex;
-
     justify-content:space-between;
-
     align-items:center;
-
-    margin-bottom:10px;
-
+    gap:12px;
+    margin-bottom:12px;
     width:100%;
+    background:var(--panel);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:10px 14px;
+    flex-wrap:wrap;
 }
 
 #statusBar{
-
     display:flex;
-
-    gap:40px;
-
+    gap:10px;
     align-items:center;
-
-    font-weight:bold;
+    font-weight:600;
+    font-size:14px;
+    color:var(--muted);
+    flex-wrap:wrap;
 }
-
+#statusBar > div{
+    background:#eef3f2;
+    border-radius:999px;
+    padding:6px 13px;
+    font-variant-numeric:tabular-nums;
+}
+#statusBar span{color:var(--ink);}
 
 #targetNumber{
-
-    font-size:28px;
-
-    font-weight:bold;
-
+    font-size:30px;
+    font-weight:800;
+    letter-spacing:.01em;
     margin:0;
-
     text-align:center;
-
     flex-grow:1;
+    color:var(--accent-dark);
+    font-variant-numeric:tabular-nums;
+}
+
+#homeBtn{margin:0;padding:9px 16px;font-size:14px;}
+
+#progressTrack{
+    height:5px;
+    border-radius:5px;
+    background:#dbe5e3;
+    overflow:hidden;
+    margin:0 4px 14px;
+}
+#progressBar{
+    height:100%;
+    width:0;
+    background:var(--accent);
+    border-radius:5px;
+    transition:width .35s ease;
 }
 
 #readModePanel{
-
     display:none;
-    margin-bottom:5px;
+    margin-bottom:12px;
+    font-weight:600;
+    color:var(--muted);
 }
 
 #mouseNumberInput{
-
-    font-size:24px;
-    width:140px;
+    font:inherit;
+    font-size:28px;
+    font-weight:700;
+    width:170px;
     text-align:center;
+    margin-top:8px;
+    padding:8px;
+    border-radius:12px;
+    border:2px solid var(--line);
+    background:#fff;
+    color:var(--ink);
+    transition:border-color .15s,box-shadow .15s;
+}
+#mouseNumberInput:focus{
+    outline:none;
+    border-color:var(--accent);
+    box-shadow:0 0 0 4px rgba(15,118,110,.15);
 }
 
+/* ---------- main layout ---------- */
+
 .layout{
-
     display:flex;
-
     justify-content:center;
-
-    gap:15px;
-
+    gap:16px;
     align-items:flex-start;
-
     margin-top:0;
 }
 
 #referenceKey{
-
-    width:250px;
-
-    min-width:250px;
-
-    background:white;
-
-    padding:10px 15px 15px 15px;
-
+    width:260px;
+    min-width:260px;
+    background:var(--panel);
+    padding:16px 18px 18px;
     text-align:left;
-
-    border-radius:10px;
-
-    box-shadow:0 0 5px #ccc;
-
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
     flex-shrink:0;
+    font-size:14px;
 }
 
-#earArea{
+.referenceTitle{margin:0 0 12px;font-size:16px;}
 
-    background:white;
+.keyHead{
+    display:block;
+    margin:14px 0 6px;
+    padding-bottom:4px;
+    border-bottom:2px solid var(--accent-soft);
+    font-weight:700;
+}
+.keyHead:first-of-type{margin-top:0;}
 
-    padding:5px 15px 15px 15px;
+.keyRow{
+    display:flex;
+    justify-content:space-between;
+    padding:3px 0;
+    color:var(--muted);
+}
+.keyRow b{color:var(--ink);font-variant-numeric:tabular-nums;font-weight:600;}
 
+#feedback{
+    margin-top:14px;
+    min-height:60px;
+    text-align:left;
+    font-size:15px;
+    line-height:1.5;
     border-radius:10px;
+}
+#feedback.ok,#feedback.bad{padding:12px 14px;font-weight:600;}
+#feedback.ok{background:#e7f6e8;color:#1f6b25;}
+#feedback.bad{background:#fdeaea;color:#8f1d1d;font-weight:500;}
+#feedback.bad b{font-weight:700;}
 
-    box-shadow:0 0 8px #ccc;
+#earArea{
+    background:var(--panel);
+    padding:10px 16px 14px;
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    flex:1;
+    max-width:832px;
+    min-width:0;
 }
 
 svg{
-
-    width:800px;
-    height:425px;
+    width:100%;
+    max-width:800px;
+    height:auto;
+    display:block;
+    margin:0 auto;
+    border-radius:10px;
 }
 
-.readModeSvg{
+.readModeSvg{max-width:620px;}
 
-    height:325px !important;
+.actions{margin-top:8px;}
+.actions button{min-width:160px;}
 
-}
+/* ---------- SVG elements ---------- */
 
-.ear{
+.ear{fill:#ececec;stroke:black;stroke-width:4;}
+.head{fill:#ececec;stroke:black;stroke-width:4;}
+.eye{fill:black;}
+.nose{fill:black;}
 
-    fill:#ececec;
-
-    stroke:black;
-
-    stroke-width:4;
-}
-
-.head{
-
-    fill:#ececec;
-
-    stroke:black;
-
-    stroke-width:4;
-}
-
-.eye{
-
-    fill:black;
-}
-
-.nose{
-
-    fill:black;
-}
-
-.hole{
-
+.hole,.half,.double,.center{
     fill:white;
-
-    stroke:black;
-
-    stroke-width:2;
-
     cursor:pointer;
+    stroke-linejoin:round;
+    transition:fill .12s,stroke .12s;
 }
+.hole{stroke:black;stroke-width:2;}
+.half,.double{stroke:#444;stroke-width:2;}
+.center{stroke:black;stroke-width:3;}
 
-.half{
+.hole:hover,.center:hover,.notch.hl{fill:#cfe8fb;}
 
-    fill:white;
+/* notches are drawn only; the larger invisible .hit shapes take the clicks */
+.notch{pointer-events:none;}
 
-    stroke:#666;
-
-    stroke-width:2;
-
+.hit{
+    fill:transparent;
     cursor:pointer;
+    pointer-events:all;
+}
+line.hit{
+    stroke:transparent;
+    fill:none;
+    stroke-linecap:round;
+    pointer-events:stroke;
 }
 
-.double{
+.readModeSvg .hit,
+.readModeSvg .hole,
+.readModeSvg .center{cursor:default;}
 
-    fill:white;
+svg{-webkit-tap-highlight-color:transparent;}
 
-    stroke:#666;
+.selected{fill:#2196F3 !important;stroke:#2196F3 !important;}
 
-    stroke-width:2;
+.correct{fill:none !important;stroke:#4CAF50 !important;stroke-width:6 !important;}
 
-    cursor:pointer;
-}
+.userCorrect{fill:#2196F3 !important;stroke:#4CAF50 !important;stroke-width:5 !important;}
 
-.center{
-
-    fill:white;
-
-    stroke:black;
-
-    stroke-width:3;
-
-    cursor:pointer;
-}
-
-.selected{
-
-    fill:#2196F3 !important;
-
-    stroke:#2196F3 !important;
-}
-
-.correct{
-
-    fill:none !important;
-
-    stroke:#4CAF50 !important;
-
-    stroke-width:6 !important;
-}
-
-.userCorrect{
-
-    fill:#2196F3 !important;
-
-    stroke:#4CAF50 !important;
-
-    stroke-width:5 !important;
-}
-
-
-.incorrect{
-
-    fill:#ff6666 !important;
-
-    stroke:#cc0000 !important;
-
-    stroke-width:4 !important;
-}
+.incorrect{fill:#ff6666 !important;stroke:#cc0000 !important;stroke-width:4 !important;}
 
 .label{
-
     font-size:16px;
-
     font-weight:bold;
-
     pointer-events:none;
+    paint-order:stroke;
+    stroke:#fff;
+    stroke-width:3px;
+    stroke-linejoin:round;
 }
 
-
 .orientationLabel{
-
     font-size:32px;
     font-weight:bold;
     fill:#666;
     pointer-events:none;
 }
 
-.referenceTitle{
-
-    margin-top:0;
-
-    margin-bottom:20px;
-}
-
-#feedback{
-
-    margin-top:15px;
-
-    min-height:120px;
-
-    text-align:left;
-
-    font-size:16px;
-
-    font-weight:normal;
-}
-
 .imageFlipped{
-
-    transform:
-        translateY(100px)
-        scaleY(-1);
-
+    transform:translateY(100px) scaleY(-1);
     transform-origin:center center;
-
 }
 
-.notchesFacingAway{
+.notchesFacingAway{transform:translate(0px,0px);}
 
-    transform:translate(0px, 0px);
+/* ---------- summary ---------- */
 
+.statGrid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin:14px 0 6px;
 }
+.stat{
+    background:#eef3f2;
+    border-radius:12px;
+    padding:14px 6px;
+}
+.stat b{display:block;font-size:26px;color:var(--accent-dark);font-variant-numeric:tabular-nums;}
+.stat small{color:var(--muted);font-size:12px;}
 
 #appFooter{
-    margin-top:30px;
+    margin-top:28px;
     font-size:12px;
-    color:#888;
+    color:#8a9a9f;
     text-align:center;
 }
 
-</style>
+@media (max-width:860px){
+    .layout{flex-direction:column;align-items:stretch;}
+    #referenceKey{width:100%;min-width:0;}
+    #targetNumber{order:-1;flex-basis:100%;}
+}
 
+@media (prefers-reduced-motion:reduce){
+    *{transition:none !important;}
+}
+</style>
 </head>
 
 <body>
 
-<h1>
-🐭 JAX Mouse Ear Notch Simulator
-</h1>
+<h1>🐭 JAX Mouse Ear Notch Simulator</h1>
+<p class="subtitle">Practice building and reading ear notch ID numbers</p>
 
 <div id="startScreen">
 
-    <h2>Select Difficulty</h2>
-
-    <label>
-        <input
-            type="radio"
-            name="difficulty"
-            value="easy"
-            checked
-        >
-        Easy
-    </label>
-
-    <label>
-        <input
-            type="radio"
-            name="difficulty"
-            value="medium"
-        >
-        Medium
-    </label>
-
-    <label>
-        <input
-            type="radio"
-            name="difficulty"
-            value="hard"
-        >
-        Hard
-    </label>
-
-    <br><br>
-
-    <h2>Training Mode</h2>
-
-    <select id="trainingMode">
-
-        <option value="build">
-            Ear Notching
-        </option>
-
-        <option value="read">
-            Reading Ear Notches
-        </option>
-
-    </select>
-
-    <br><br>
-
-    
-    <h2>Orientation</h2>
-
-    <select id="orientationMode">
-
-        <option value="facing">
-            Facing Me
-        </option>
-
-        <option value="away">
-            Facing Away
-        </option>
-
-        <option value="random">
-            Random
-        </option>
-
-    </select>
-
-    <br><br>
-
-    <button id="startBtn">
-        Start Training
-    </button>
-
-    <br><br>
-
-    <h2>Real Life Practice</h2>
-
-    <button
-        id="practiceNumbersBtn"
-        onclick="generatePracticeNumbers()">
-        Auto Generate 5 Numbers
-    </button>
-
-    <div
-        id="practiceNumbers"
-        style="
-            display:none;
-            margin-top:10px;
-            background:white;
-            padding:8px;
-            border-radius:10px;
-            box-shadow:0 0 5px #ccc;
-            font-size:20px;
-            font-weight:bold;
-            width:fit-content;
-            margin-left:auto;
-            margin-right:auto;
-        ">
+    <div class="card">
+        <h2>Difficulty</h2>
+        <div class="segmented">
+            <label><input type="radio" name="difficulty" value="easy" checked><span>Easy</span></label>
+            <label><input type="radio" name="difficulty" value="medium"><span>Medium</span></label>
+            <label><input type="radio" name="difficulty" value="hard"><span>Hard</span></label>
+        </div>
+        <p class="hint">Easy shows number labels and the key. Medium shows only the key. Hard shows neither.</p>
     </div>
+
+    <div class="card">
+        <h2>Training Mode</h2>
+        <select id="trainingMode">
+            <option value="build">Ear Notching</option>
+            <option value="read">Reading Ear Notches</option>
+        </select>
+
         <br><br>
 
+        <h2>Orientation</h2>
+        <select id="orientationMode">
+            <option value="facing">Facing Me</option>
+            <option value="away">Facing Away</option>
+            <option value="random">Random</option>
+        </select>
+    </div>
 
+    <div class="startBtnWrap">
+        <button id="startBtn" class="primary">Start Training</button>
+    </div>
+
+    <div class="card" style="text-align:center;">
+        <h2>Real Life Practice</h2>
+        <button id="practiceNumbersBtn" onclick="generatePracticeNumbers()">
+            Auto Generate 5 Numbers
+        </button>
+        <div id="practiceNumbers"></div>
+    </div>
 
 </div>
 
@@ -440,60 +494,22 @@ svg{
     <div id="topBar">
 
         <div id="statusBar">
-
-            <div>
-                Mouse
-                <span id="questionNumber">
-                    1
-                </span>/
-                <span id="totalQuestions">
-                    10
-                </span>
-            </div>
-
-            <div>
-                Time:
-                <span id="timer">
-                    0.0
-                </span>s
-            </div>
-
-            <div>
-                Score:
-                <span id="scoreLabel">
-                    0
-                </span>
-            </div>
-
+            <div>Mouse <span id="questionNumber">1</span>/<span id="totalQuestions">10</span></div>
+            <div>Time: <span id="timer">0.0</span>s</div>
+            <div>Score: <span id="scoreLabel">0</span></div>
         </div>
 
-        <div id="targetNumber">
+        <div id="targetNumber">Mouse #000</div>
 
-            Mouse #000
-
-        </div>
-
-        <button
-            id="homeBtn"
-            onclick="returnToMenu()">
-            🏠 Return To Home
-        </button>
+        <button id="homeBtn" onclick="returnToMenu()">🏠 Return To Home</button>
 
     </div>
 
+    <div id="progressTrack"><div id="progressBar"></div></div>
+
     <div id="readModePanel">
-
-        <div>
-            Enter Mouse Number
-        </div>
-
-        <br>
-
-        <input
-            type="number"
-            id="mouseNumberInput"
-        >
-
+        <div>Enter Mouse Number</div>
+        <input type="number" id="mouseNumberInput">
     </div>
 
     <div class="layout">
@@ -502,49 +518,19 @@ svg{
 
             <div id="keyContent">
 
-                <h3 class="referenceTitle">
-                    Reference Key
-                </h3>
+                <h3 class="referenceTitle">Reference Key</h3>
 
-                <b>Mouse Right Ear</b>
+                <span class="keyHead">Mouse Right Ear</span>
+                <div class="keyRow"><span>Hole</span><b>1, 2, 3</b></div>
+                <div class="keyRow"><span>Notch</span><b>4, 5, 6</b></div>
+                <div class="keyRow"><span>Double Notch</span><b>7, 8, 9</b></div>
+                <div class="keyRow"><span>Center</span><b>100</b></div>
 
-                <br><br>
-
-                Hole: 1, 2, 3
-
-                <br>
-
-                Notch: 4, 5, 6
-
-                <br>
-
-                Double Notch: 7, 8, 9
-
-                <br>
-
-                Center: 100
-
-                <br><br><br>
-
-                <b>Mouse Left Ear</b>
-
-                <br><br>
-
-                Hole: 10, 20, 30
-
-                <br>
-
-                Notch: 40, 50, 60
-
-                <br>
-
-                Double Notch: 70, 80, 90
-
-                <br>
-
-                Center: 200
-
-                <hr style="margin-top:20px;">
+                <span class="keyHead">Mouse Left Ear</span>
+                <div class="keyRow"><span>Hole</span><b>10, 20, 30</b></div>
+                <div class="keyRow"><span>Notch</span><b>40, 50, 60</b></div>
+                <div class="keyRow"><span>Double Notch</span><b>70, 80, 90</b></div>
+                <div class="keyRow"><span>Center</span><b>200</b></div>
 
             </div>
 
@@ -554,374 +540,82 @@ svg{
 
         <div id="earArea">
 
-            <svg
-                id="earSvg"
-                viewBox="0 40 850 560">
+            <svg id="earSvg" viewBox="0 40 850 560">
 
                 <g id="mouseBody">
+                    <image id="mouseImage" href="mouse_background.png" x="0" y="0" width="700" height="700"/>
+                </g>
 
-                    <image
-                        id="mouseImage"                        
-                        href="mouse_background.png"
-                        x="0"
-                        y="0"
-                        width="700"
-                        height="700"
-                    />
+                <!-- invisible click areas (built by script) -->
+                <g id="hitLayer"></g>
+
+                <g id="notchLayer">
+
+                    <!-- Holes are full circles. Notches (half and double) are
+                         half-circles cut into the ear edge; their position and
+                         rotation are set by placeAll() in the script. -->
+
+                    <!-- RIGHT EAR : TOP -->
+                    <circle id="rtHole" class="hole" r="16"/>
+                    <path id="rtHalf" class="half notch" data-r="16" d="M0 -16A16 16 0 0 0 0 16Z"/>
+                    <path id="rtDouble1" class="double notch" data-r="14" d="M0 -14A14 14 0 0 0 0 14Z"/>
+                    <path id="rtDouble2" class="double notch" data-r="14" d="M0 -14A14 14 0 0 0 0 14Z"/>
+
+                    <!-- RIGHT EAR : MIDDLE -->
+                    <circle id="rmHole" class="hole" r="16"/>
+                    <path id="rmHalf" class="half notch" data-r="16" d="M0 -16A16 16 0 0 0 0 16Z"/>
+                    <path id="rmDouble1" class="double notch" data-r="14" d="M0 -14A14 14 0 0 0 0 14Z"/>
+                    <path id="rmDouble2" class="double notch" data-r="14" d="M0 -14A14 14 0 0 0 0 14Z"/>
+
+                    <!-- RIGHT EAR : BOTTOM -->
+                    <circle id="rbHole" class="hole" r="16"/>
+                    <path id="rbHalf" class="half notch" data-r="16" d="M0 -16A16 16 0 0 0 0 16Z"/>
+                    <path id="rbDouble1" class="double notch" data-r="14" d="M0 -14A14 14 0 0 0 0 14Z"/>
+                    <path id="rbDouble2" class="double notch" data-r="14" d="M0 -14A14 14 0 0 0 0 14Z"/>
+
+                    <!-- RIGHT EAR CENTER -->
+                    <circle id="rightCenter" class="center" r="24"/>
+
+                    <!-- LEFT EAR : TOP -->
+                    <circle id="ltHole" class="hole" r="16"/>
+                    <path id="ltHalf" class="half notch" data-r="16" d="M0 -16A16 16 0 0 0 0 16Z"/>
+                    <path id="ltDouble1" class="double notch" data-r="14" d="M0 -14A14 14 0 0 0 0 14Z"/>
+                    <path id="ltDouble2" class="double notch" data-r="14" d="M0 -14A14 14 0 0 0 0 14Z"/>
+
+                    <!-- LEFT EAR : MIDDLE -->
+                    <circle id="lmHole" class="hole" r="16"/>
+                    <path id="lmHalf" class="half notch" data-r="16" d="M0 -16A16 16 0 0 0 0 16Z"/>
+                    <path id="lmDouble1" class="double notch" data-r="14" d="M0 -14A14 14 0 0 0 0 14Z"/>
+                    <path id="lmDouble2" class="double notch" data-r="14" d="M0 -14A14 14 0 0 0 0 14Z"/>
+
+                    <!-- LEFT EAR : BOTTOM -->
+                    <circle id="lbHole" class="hole" r="16"/>
+                    <path id="lbHalf" class="half notch" data-r="16" d="M0 -16A16 16 0 0 0 0 16Z"/>
+                    <path id="lbDouble1" class="double notch" data-r="14" d="M0 -14A14 14 0 0 0 0 14Z"/>
+                    <path id="lbDouble2" class="double notch" data-r="14" d="M0 -14A14 14 0 0 0 0 14Z"/>
+
+                    <!-- LEFT EAR CENTER -->
+                    <circle id="leftCenter" class="center" r="24"/>
 
                 </g>
 
-<g id="notchLayer">
+                <!-- NUMBER LABELS (built by script, easy mode only) -->
+                <g id="labelLayer"></g>
 
+                <!-- EAR LABELS -->
+                <text id="rightEarLabel" class="orientationLabel" x="230" y="175" text-anchor="middle">R</text>
+                <text id="leftEarLabel" class="orientationLabel" x="620" y="175" text-anchor="middle">L</text>
 
-<!-- ====================================== -->
-<!-- RIGHT EAR -->
-<!-- TOP -->
-<!-- ====================================== -->
+            </svg>
 
-<circle id="rtHole"
-    class="hole"
-    cx="220"
-    cy="250"
-    r="16"/>
+            <div class="actions">
+                <button id="submitBtn" class="primary">Submit Answer</button>
+                <button id="nextBtn" style="display:none;">Next Mouse</button>
+            </div>
 
-<circle id="rtHalf"
-    class="half"
-    cx="170"
-    cy="270"
-    r="16"/>
+        </div> <!-- earArea -->
 
-<circle id="rtDouble1"
-    class="double"
-    cx="180"
-    cy="200"
-    r="14"/>
-
-<circle id="rtDouble2"
-    class="double"
-    cx="190"
-    cy="180"
-    r="14"/>
-
-<!-- ====================================== -->
-<!-- RIGHT EAR -->
-<!-- MIDDLE -->
-<!-- ====================================== -->
-
-<circle id="rmHole"
-    class="hole"
-    cx="100"
-    cy="160"
-    r="16"/>
-
-<circle id="rmHalf"
-    class="half"
-    cx="90"
-    cy="115"
-    r="16"/>
-
-<circle id="rmDouble1"
-    class="double"
-    cx="50"
-    cy="160"
-    r="14"/>
-
-<circle id="rmDouble2"
-    class="double"
-    cx="40"
-    cy="180"
-    r="14"/>
-
-<!-- ====================================== -->
-<!-- RIGHT EAR -->
-<!-- BOTTOM -->
-<!-- ====================================== -->
-
-<circle id="rbHole"
-    class="hole"
-    cx="115"
-    cy="300"
-    r="16"/>
-
-<circle id="rbHalf"
-    class="half"
-    cx="120"
-    cy="350"
-    r="16"/>
-
-<circle id="rbDouble1"
-    class="double"
-    cx="62"
-    cy="290"
-    r="14"/>
-
-<circle id="rbDouble2"
-    class="double"
-    cx="75"
-    cy="310"
-    r="14"/>
-
-<!-- ====================================== -->
-<!-- RIGHT EAR CENTER -->
-<!-- ====================================== -->
-
-<circle id="rightCenter"
-    class="center"
-    cx="120"
-    cy="220"
-    r="24"/>
-
-<!-- ====================================== -->
-<!-- LEFT EAR -->
-<!-- TOP -->
-<!-- ====================================== -->
-
-<circle id="ltHole"
-    class="hole"
-    cx="490"
-    cy="250"
-    r="16"/>
-
-<circle id="ltHalf"
-    class="half"
-    cx="540"
-    cy="270"
-    r="16"/>
-
-<circle id="ltDouble1"
-    class="double"
-    cx="530"
-    cy="200"
-    r="14"/>
-
-<circle id="ltDouble2"
-    class="double"
-    cx="520"
-    cy="180"
-    r="14"/>
-
-<!-- ====================================== -->
-<!-- LEFT EAR -->
-<!-- MIDDLE -->
-<!-- ====================================== -->
-
-<circle id="lmHole"
-    class="hole"
-    cx="610"
-    cy="160"
-    r="16"/>
-
-<circle id="lmHalf"
-    class="half"
-    cx="620"
-    cy="115"
-    r="16"/>
-
-<circle id="lmDouble1"
-    class="double"
-    cx="660"
-    cy="160"
-    r="14"/>
-
-<circle id="lmDouble2"
-    class="double"
-    cx="670"
-    cy="180"
-    r="14"/>
-
-<!-- ====================================== -->
-<!-- LEFT EAR -->
-<!-- BOTTOM -->
-<!-- ====================================== -->
-
-<circle id="lbHole"
-    class="hole"
-    cx="595"
-    cy="300"
-    r="16"/>
-
-<circle id="lbHalf"
-    class="half"
-    cx="590"
-    cy="350"
-    r="16"/>
-
-<circle id="lbDouble1"
-    class="double"
-    cx="648"
-    cy="290"
-    r="14"/>
-
-<circle id="lbDouble2"
-    class="double"
-    cx="635"
-    cy="310"
-    r="14"/>
-
-<!-- ====================================== -->
-<!-- LEFT EAR CENTER -->
-<!-- ====================================== -->
-
-<circle id="leftCenter"
-    class="center"
-    cx="590"
-    cy="220"
-    r="24"/>
-
-</g>
-<!-- ====================================== -->
-<!-- EASY MODE LABELS -->
-<!-- ====================================== -->
-
-<!-- ====================================== -->
-<!-- FACING ME LABELS -->
-<!-- ====================================== -->
-
-<g id="easyLabels">
-
-    <!-- RIGHT EAR (mouse right, screen left) -->
-
-    <text class="label" x="215" y="255">1</text>
-    <text class="label" x="165" y="275">4</text>
-    <text class="label" x="205" y="205">7</text>
-
-    <text class="label" x="97" y="165">2</text>
-    <text class="label" x="86" y="120">5</text>
-    <text class="label" x="15" y="160">8</text>
-
-    <text class="label" x="113" y="305">3</text>
-    <text class="label" x="115" y="355">6</text>
-    <text class="label" x="40" y="320">9</text>
-
-    <text
-        class="label"
-        x="120"
-        y="225"
-        text-anchor="middle">
-        100
-    </text>
-
-    <!-- LEFT EAR (mouse left, screen right) -->
-
-    <text class="label" x="480" y="255">10</text>
-    <text class="label" x="532" y="275">40</text>
-    <text class="label" x="490" y="210">70</text>
-
-    <text class="label" x="600" y="165">20</text>
-    <text class="label" x="612" y="120">50</text>
-    <text class="label" x="685" y="165">80</text>
-
-    <text class="label" x="585" y="305">30</text>
-    <text class="label" x="580" y="356">60</text>
-    <text class="label" x="660" y="320">90</text>
-
-    <text
-        class="label"
-        x="590"
-        y="225"
-        text-anchor="middle">
-        200
-    </text>
-
-</g>
-
-<!-- ====================================== -->
-<!-- FACING AWAY LABELS -->
-<!-- ====================================== -->
-
-<g id="awayLabels" style="display:none;">
-
-    <!-- LEFT EAR NOW ON LEFT SIDE -->
-
-    <text class="label" x="220" y="405">10</text>
-    <text class="label" x="162" y="385">40</text>
-    <text class="label" x="190" y="430">70</text>
-
-    <text class="label" x="72" y="485">20</text>
-    <text class="label" x="30" y="455">50</text>
-    <text class="label" x="15" y="530">80</text>
-
-    <text class="label" x="100" y="370">30</text>
-    <text class="label" x="100" y="325">60</text>
-    <text class="label" x="35" y="355">90</text>
-
-    <text
-        class="label"
-        x="115"
-        y="445"
-        text-anchor="middle">
-        200
-    </text>
-
-    <!-- RIGHT EAR NOW ON RIGHT SIDE -->
-
-    <text class="label" x="470" y="405">1</text>
-    <text class="label" x="532" y="385">4</text>
-    <text class="label" x="505" y="435">7</text>
-
-    <text class="label" x="620" y="485">2</text>
-    <text class="label" x="665" y="455">5</text>
-    <text class="label" x="670" y="530">8</text>
-
-    <text class="label" x="590" y="370">3</text>
-    <text class="label" x="590" y="325">6</text>
-    <text class="label" x="655" y="355">9</text>
-
-    <text
-        class="label"
-        x="590"
-        y="445"
-        text-anchor="middle">
-        100
-    </text>
-
-</g>
-
-
-<!-- ====================================== -->
-<!-- EAR LABELS -->
-<!-- ====================================== -->
-
-<text
-    id="rightEarLabel"
-    class="orientationLabel"
-    x="230"
-    y="175"
-    text-anchor="middle">
-    R
-</text>
-
-<text
-    id="leftEarLabel"
-    class="orientationLabel"
-    x="620"
-    y="175"
-    text-anchor="middle">
-    L
-
-</text>
-
-</svg>
-
-<div>
-
-    <button id="submitBtn">
-        Submit Answer
-    </button>
-
-    <button
-        id="nextBtn"
-        style="display:none;">
-        Next Mouse
-    </button>
-
-</div>
-
-<div id="feedback"></div>
-
-</div> <!-- earArea -->
-
-</div> <!-- layout -->
+    </div> <!-- layout -->
 
 </div> <!-- gameContainer -->
 
@@ -933,9 +627,7 @@ MODE SETTINGS
 ********************************************/
 
 let trainingMode = "build";
-
 let orientationMode = "facing";
-
 let currentFacingAway = false;
 
 
@@ -944,15 +636,12 @@ SELECTION STATE
 ********************************************/
 
 let selections = {
-
     rightTop:"none",
     rightMiddle:"none",
     rightBottom:"none",
-
     leftTop:"none",
     leftMiddle:"none",
     leftBottom:"none",
-
     rightCenter:false,
     leftCenter:false
 };
@@ -963,44 +652,310 @@ LOCATION DEFINITIONS
 ********************************************/
 
 const locations = {
+    rightTop:{hole:"rtHole",half:"rtHalf",double:["rtDouble1","rtDouble2"]},
+    rightMiddle:{hole:"rmHole",half:"rmHalf",double:["rmDouble1","rmDouble2"]},
+    rightBottom:{hole:"rbHole",half:"rbHalf",double:["rbDouble1","rbDouble2"]},
+    leftTop:{hole:"ltHole",half:"ltHalf",double:["ltDouble1","ltDouble2"]},
+    leftMiddle:{hole:"lmHole",half:"lmHalf",double:["lmDouble1","lmDouble2"]},
+    leftBottom:{hole:"lbHole",half:"lbHalf",double:["lbDouble1","lbDouble2"]}
+};
 
-    rightTop:{
-        hole:"rtHole",
-        half:"rtHalf",
-        double:["rtDouble1","rtDouble2"]
+
+/********************************************
+ELEMENT POSITIONS
+[x, y] for every clickable shape in each orientation
+********************************************/
+
+const POSITIONS = {
+
+    facing:{
+        rtHole:[220,250], rtHalf:[165,270], rtDouble1:[177,206], rtDouble2:[189,174],
+        rmHole:[100,160], rmHalf:[90,115],  rmDouble1:[54,154],  rmDouble2:[43,186],
+        rbHole:[115,300], rbHalf:[120,350], rbDouble1:[59,286],  rbDouble2:[78,314],
+        rightCenter:[120,220],
+
+        ltHole:[490,250], ltHalf:[545,270], ltDouble1:[533,206], ltDouble2:[521,174],
+        lmHole:[610,160], lmHalf:[620,115], lmDouble1:[656,154], lmDouble2:[667,186],
+        lbHole:[595,300], lbHalf:[590,350], lbDouble1:[651,286], lbDouble2:[632,314],
+        leftCenter:[590,220]
     },
 
-    rightMiddle:{
-        hole:"rmHole",
-        half:"rmHalf",
-        double:["rmDouble1","rmDouble2"]
-    },
-
-    rightBottom:{
-        hole:"rbHole",
-        half:"rbHalf",
-        double:["rbDouble1","rbDouble2"]
-    },
-
-    leftTop:{
-        hole:"ltHole",
-        half:"ltHalf",
-        double:["ltDouble1","ltDouble2"]
-    },
-
-    leftMiddle:{
-        hole:"lmHole",
-        half:"lmHalf",
-        double:["lmDouble1","lmDouble2"]
-    },
-
-    leftBottom:{
-        hole:"lbHole",
-        half:"lbHalf",
-        double:["lbDouble1","lbDouble2"]
-    }
+    away:{}
 
 };
+
+/*
+FACING AWAY
+The picture is the same drawing turned upside down (top to bottom), so every
+shape keeps its x position and its y is flipped around FLIP_Y. The ear drawn on
+the left of the screen is now the mouse's LEFT ear, so right / left ids swap.
+*/
+const FLIP_Y = 660;
+
+function swapSide(id){
+
+    if(id === "rightCenter") return "leftCenter";
+    if(id === "leftCenter") return "rightCenter";
+
+    return (id.charAt(0) === "r" ? "l" : "r") + id.slice(1);
+
+}
+
+Object.keys(POSITIONS.facing).forEach(id=>{
+
+    const p = POSITIONS.facing[id];
+
+    POSITIONS.away[swapSide(id)] = [p[0], FLIP_Y - p[1]];
+
+});
+
+
+/********************************************
+CLICK AREAS
+Every half notch gets a full invisible circle.
+Every double notch gets an invisible bar that
+joins the two half notches. Only the half
+notches are drawn; these areas just catch taps.
+********************************************/
+
+const HIT_RADIUS = 22;
+const SVG_NS = "http://www.w3.org/2000/svg";
+const canHover = window.matchMedia && window.matchMedia("(hover: hover)").matches;
+
+function addHoverHighlight(hitEl, ids){
+
+    if(!canHover){
+        return;
+    }
+
+    hitEl.addEventListener("pointerenter",()=>{
+        ids.forEach(id=>document.getElementById(id).classList.add("hl"));
+    });
+
+    hitEl.addEventListener("pointerleave",()=>{
+        ids.forEach(id=>document.getElementById(id).classList.remove("hl"));
+    });
+
+}
+
+(function buildHitLayer(){
+
+    const layer = document.getElementById("hitLayer");
+
+    Object.keys(locations).forEach(location=>{
+
+        const cfg = locations[location];
+
+        const circle = document.createElementNS(SVG_NS,"circle");
+        circle.setAttribute("class","hit");
+        circle.setAttribute("id","hit_" + location + "_half");
+        circle.setAttribute("r",HIT_RADIUS);
+        layer.appendChild(circle);
+
+        addHoverHighlight(circle,[cfg.half]);
+
+        const bar = document.createElementNS(SVG_NS,"line");
+        bar.setAttribute("class","hit");
+        bar.setAttribute("id","hit_" + location + "_double");
+        bar.setAttribute("stroke-width",HIT_RADIUS * 2);
+        layer.appendChild(bar);
+
+        addHoverHighlight(bar,cfg.double);
+
+    });
+
+})();
+
+
+/********************************************
+PLACE SHAPES
+Holes / centers are full circles.
+Notches are half-circles whose flat side lies
+along the ear edge so only the half inside the
+ear shows.
+********************************************/
+
+/*
+Notch rotation, in degrees, for the drawn ear on the left of the screen
+when the mouse faces you (the mouse's right ear). The flat side of each
+half-circle lies on the nearest edge. Notches 4 and 7 cut into the white
+part of the ear, so they are turned 180 degrees from the others.
+Every other case is a mirror of these values.
+*/
+const NOTCH_ANGLES = {
+    rtHalf:190,   rtDouble1:-169, rtDouble2:-154,
+    rmHalf:-108,  rmDouble1:-148, rmDouble2:-175,
+    rbHalf:120,   rbDouble1:150,  rbDouble2:138
+};
+
+/* turn an angle measured on the facing right ear into the matching angle for any ear / orientation */
+function mapAngle(base,isRightId,away){
+
+    if(!away){
+        return isRightId ? base : 180 - base;
+    }
+
+    /* facing away: the image is flipped top to bottom */
+    return isRightId ? base - 180 : -base;
+
+}
+
+function notchAngle(id,away){
+
+    return mapAngle(
+        NOTCH_ANGLES["r" + id.slice(1)],
+        id.charAt(0) === "r",
+        away
+    );
+
+}
+
+/*
+Number labels for the notches. Each label sits beside its notch(es),
+in direction "ang" and at distance "d" (right ear, facing you).
+*/
+const LABEL_DEFS = [
+    {n:4, roles:["tHalf"],                ang:28,   d:43},
+    {n:5, roles:["mHalf"],                ang:-108, d:32},
+    {n:6, roles:["bHalf"],                ang:118,  d:29.5},
+    {n:7, roles:["tDouble1","tDouble2"],  ang:15,   d:30},
+    {n:8, roles:["mDouble1","mDouble2"],  ang:-161, d:34},
+    {n:9, roles:["bDouble1","bDouble2"],  ang:144,  d:34}
+];
+
+/* Labels for holes and centers (centered on the shape). */
+const SHAPE_LABELS = {
+    rtHole:"1",   rmHole:"2",   rbHole:"3",   rightCenter:"100",
+    ltHole:"10",  lmHole:"20",  lbHole:"30",  leftCenter:"200"
+};
+
+(function buildLabels(){
+
+    const layer = document.getElementById("labelLayer");
+
+    function makeLabel(id,text){
+
+        const t = document.createElementNS(SVG_NS,"text");
+
+        t.setAttribute("class","label");
+        t.setAttribute("text-anchor","middle");
+        t.setAttribute("id",id);
+
+        t.textContent = text;
+
+        layer.appendChild(t);
+
+    }
+
+    Object.keys(SHAPE_LABELS).forEach(id=>{
+        makeLabel("label_" + id, SHAPE_LABELS[id]);
+    });
+
+    ["r","l"].forEach(side=>{
+
+        LABEL_DEFS.forEach(def=>{
+            makeLabel(
+                "label_" + side + def.n,
+                side === "r" ? def.n : def.n * 10
+            );
+        });
+
+    });
+
+})();
+
+function placeAll(away){
+
+    const set = away ? POSITIONS.away : POSITIONS.facing;
+
+    Object.keys(set).forEach(id=>{
+
+        const el = document.getElementById(id);
+        const x = set[id][0];
+        const y = set[id][1];
+
+        if(el.classList.contains("notch")){
+
+            el.setAttribute(
+                "transform",
+                "translate(" + x + " " + y + ") rotate(" + notchAngle(id,away) + ")"
+            );
+
+        }
+        else{
+
+            el.setAttribute("cx", x);
+            el.setAttribute("cy", y);
+
+        }
+
+    });
+
+    /* click areas */
+
+    Object.keys(locations).forEach(location=>{
+
+        const cfg = locations[location];
+
+        const half = set[cfg.half];
+        const circle = document.getElementById("hit_" + location + "_half");
+
+        circle.setAttribute("cx", half[0]);
+        circle.setAttribute("cy", half[1]);
+
+        const d1 = set[cfg.double[0]];
+        const d2 = set[cfg.double[1]];
+        const bar = document.getElementById("hit_" + location + "_double");
+
+        bar.setAttribute("x1", d1[0]);
+        bar.setAttribute("y1", d1[1]);
+        bar.setAttribute("x2", d2[0]);
+        bar.setAttribute("y2", d2[1]);
+
+    });
+
+    /* labels on holes and centers */
+
+    Object.keys(SHAPE_LABELS).forEach(id=>{
+
+        const t = document.getElementById("label_" + id);
+
+        t.setAttribute("x", set[id][0]);
+        t.setAttribute("y", set[id][1] + 5.5);
+
+    });
+
+    /* labels on notches */
+
+    ["r","l"].forEach(side=>{
+
+        LABEL_DEFS.forEach(def=>{
+
+            let sx = 0, sy = 0;
+
+            def.roles.forEach(role=>{
+                const pos = set[side + role];
+                sx += pos[0];
+                sy += pos[1];
+            });
+
+            sx /= def.roles.length;
+            sy /= def.roles.length;
+
+            const a = mapAngle(def.ang, side === "r", away) * Math.PI / 180;
+
+            const t = document.getElementById("label_" + side + def.n);
+
+            t.setAttribute("x", (sx + Math.cos(a) * def.d).toFixed(1));
+            t.setAttribute("y", (sy + Math.sin(a) * def.d + 5.5).toFixed(1));
+
+        });
+
+    });
+
+}
+
+placeAll(false);
 
 
 /********************************************
@@ -1009,16 +964,8 @@ CLEAR VISUALS
 
 function clearSelectedVisuals(){
 
-    document
-    .querySelectorAll(
-        ".selected"
-    )
-    .forEach(el=>{
-
-        el.classList.remove(
-            "selected"
-        );
-
+    document.querySelectorAll(".selected").forEach(el=>{
+        el.classList.remove("selected");
     });
 
 }
@@ -1032,96 +979,38 @@ function renderSelections(){
 
     clearSelectedVisuals();
 
-    Object.keys(locations)
-    .forEach(location=>{
+    Object.keys(locations).forEach(location=>{
 
-        let state =
-        selections[
-            location
-        ];
+        let state = selections[location];
 
-        if(
-            state === "none"
-        ){
+        if(state === "none"){
             return;
         }
 
-        let cfg =
-        locations[
-            location
-        ];
+        let cfg = locations[location];
 
-        if(
-            state === "hole"
-        ){
-
-            document
-            .getElementById(
-                cfg.hole
-            )
-            .classList.add(
-                "selected"
-            );
+        if(state === "hole"){
+            document.getElementById(cfg.hole).classList.add("selected");
         }
 
-        if(
-            state === "half"
-        ){
-
-            document
-            .getElementById(
-                cfg.half
-            )
-            .classList.add(
-                "selected"
-            );
+        if(state === "half"){
+            document.getElementById(cfg.half).classList.add("selected");
         }
 
-        if(
-            state === "double"
-        ){
-
-            cfg.double
-            .forEach(id=>{
-
-                document
-                .getElementById(id)
-                .classList.add(
-                    "selected"
-                );
-
+        if(state === "double"){
+            cfg.double.forEach(id=>{
+                document.getElementById(id).classList.add("selected");
             });
-
         }
 
     });
 
-    if(
-        selections.rightCenter
-    ){
-
-        document
-        .getElementById(
-            "rightCenter"
-        )
-        .classList.add(
-            "selected"
-        );
-
+    if(selections.rightCenter){
+        document.getElementById("rightCenter").classList.add("selected");
     }
 
-    if(
-        selections.leftCenter
-    ){
-
-        document
-        .getElementById(
-            "leftCenter"
-        )
-        .classList.add(
-            "selected"
-        );
-
+    if(selections.leftCenter){
+        document.getElementById("leftCenter").classList.add("selected");
     }
 
 }
@@ -1132,8 +1021,6 @@ CHANGE STATE
 ********************************************/
 
 function chooseState(location,state){
-
-    console.log("CLICKED:", location);
 
     if(trainingMode === "read"){
         return;
@@ -1155,84 +1042,26 @@ function chooseState(location,state){
 REGISTER LOCATION
 ********************************************/
 
-function registerLocation(
+function registerLocation(location){
 
-    location
+    let cfg = locations[location];
 
-){
+    document.getElementById(cfg.hole).addEventListener("click",()=>{
+        chooseState(location,"hole");
+    });
 
-    let cfg =
-    locations[
-        location
-    ];
+    document.getElementById("hit_" + location + "_half").addEventListener("click",()=>{
+        chooseState(location,"half");
+    });
 
-    document
-    .getElementById(
-        cfg.hole
-    )
-    .addEventListener(
-        "click",
-        ()=>{
-
-            chooseState(
-                location,
-                "hole"
-            );
-
-        }
-    );
-
-    document
-    .getElementById(
-        cfg.half
-    )
-    .addEventListener(
-        "click",
-        ()=>{
-
-            chooseState(
-                location,
-                "half"
-            );
-
-        }
-    );
-
-    cfg.double
-    .forEach(id=>{
-
-        document
-        .getElementById(id)
-        .addEventListener(
-            "click",
-            ()=>{
-
-                chooseState(
-                    location,
-                    "double"
-                );
-
-            }
-        );
-
+    document.getElementById("hit_" + location + "_double").addEventListener("click",()=>{
+        chooseState(location,"double");
     });
 
 }
 
-
-/********************************************
-REGISTER ALL LOCATIONS
-********************************************/
-
-Object.keys(
-    locations
-)
-.forEach(location=>{
-
-    registerLocation(
-        location
-    );
-
+Object.keys(locations).forEach(location=>{
+    registerLocation(location);
 });
 
 
@@ -1240,53 +1069,29 @@ Object.keys(
 CENTERS
 ********************************************/
 
-document
-.getElementById(
-    "rightCenter"
-)
-.addEventListener(
-    "click",
-    ()=>{
+document.getElementById("rightCenter").addEventListener("click",()=>{
 
-        if(
-            trainingMode === "read"
-        ){
-            return;
-        }
-
-        selections
-        .rightCenter =
-        !selections
-        .rightCenter;
-
-        renderSelections();
-
+    if(trainingMode === "read"){
+        return;
     }
-);
 
-document
-.getElementById(
-    "leftCenter"
-)
-.addEventListener(
-    "click",
-    ()=>{
+    selections.rightCenter = !selections.rightCenter;
 
-        if(
-            trainingMode === "read"
-        ){
-            return;
-        }
+    renderSelections();
 
-        selections
-        .leftCenter =
-        !selections
-        .leftCenter;
+});
 
-        renderSelections();
+document.getElementById("leftCenter").addEventListener("click",()=>{
 
+    if(trainingMode === "read"){
+        return;
     }
-);
+
+    selections.leftCenter = !selections.leftCenter;
+
+    renderSelections();
+
+});
 
 
 /********************************************
@@ -1296,15 +1101,12 @@ RESET SELECTIONS
 function resetSelections(){
 
     selections = {
-
         rightTop:"none",
         rightMiddle:"none",
         rightBottom:"none",
-
         leftTop:"none",
         leftMiddle:"none",
         leftBottom:"none",
-
         rightCenter:false,
         leftCenter:false
     };
@@ -1321,23 +1123,12 @@ function displayMouse(mouse){
 
     resetSelections();
 
-    Object.keys(locations)
-    .forEach(location=>{
-
-        selections[
-            location
-        ] =
-        mouse[
-            location
-        ];
-
+    Object.keys(locations).forEach(location=>{
+        selections[location] = mouse[location];
     });
 
-    selections.rightCenter =
-    mouse.rightCenter;
-
-    selections.leftCenter =
-    mouse.leftCenter;
+    selections.rightCenter = mouse.rightCenter;
+    selections.leftCenter = mouse.leftCenter;
 
     renderSelections();
 
@@ -1361,251 +1152,58 @@ function clearMouseDisplay(){
 /********************************************
 ORIENTATION
 ********************************************/
+
 function applyOrientation(){
 
-    let mouseImage =
-    document.getElementById("mouseImage");
-
-    let rightLabel =
-    document.getElementById("rightEarLabel");
-
-    let leftLabel =
-    document.getElementById("leftEarLabel");
-
-    let facingLabels =
-    document.getElementById("easyLabels");
-
-    let awayLabels =
-    document.getElementById("awayLabels");
+    let mouseImage = document.getElementById("mouseImage");
+    let rightLabel = document.getElementById("rightEarLabel");
+    let leftLabel = document.getElementById("leftEarLabel");
 
     currentFacingAway = false;
 
-    if (orientationMode === "away"){
+    if(orientationMode === "away"){
         currentFacingAway = true;
     }
 
-    if (orientationMode === "random"){
+    if(orientationMode === "random"){
         currentFacingAway = Math.random() > .5;
     }
 
-    /*
-    LABELS
-    */
+    /* LABELS (easy mode only) */
 
-    if(difficulty === "easy"){
+    document.getElementById("labelLayer").style.display =
+        difficulty === "easy" ? "block" : "none";
 
-        if(currentFacingAway){
-            facingLabels.style.display = "none";
-            awayLabels.style.display = "block";
-        }
-        else{
-            facingLabels.style.display = "block";
-            awayLabels.style.display = "none";
-        }
-
-    }
-    else{
-
-        facingLabels.style.display = "none";
-        awayLabels.style.display = "none";
-
-    }
-
-    /*
-    ==========================================
-    FACING AWAY
-    ==========================================
-    */
+    /* FACING AWAY */
 
     if(currentFacingAway){
 
         mouseImage.classList.add("imageFlipped");
 
-        /*
-        LEFT EAR (screen LEFT)
-        */
-
-        document.getElementById("ltHole").setAttribute("cx",230);
-        document.getElementById("ltHole").setAttribute("cy",400);
-
-        document.getElementById("ltHalf").setAttribute("cx",170);
-        document.getElementById("ltHalf").setAttribute("cy",380);
-
-        document.getElementById("ltDouble1").setAttribute("cx",170);
-        document.getElementById("ltDouble1").setAttribute("cy",420);
-
-        document.getElementById("ltDouble2").setAttribute("cx",175);
-        document.getElementById("ltDouble2").setAttribute("cy",445);
-
-        document.getElementById("lmHole").setAttribute("cx",80);
-        document.getElementById("lmHole").setAttribute("cy",480);
-
-        document.getElementById("lmHalf").setAttribute("cx",40);
-        document.getElementById("lmHalf").setAttribute("cy",450);
-
-        document.getElementById("lmDouble1").setAttribute("cx",45);
-        document.getElementById("lmDouble1").setAttribute("cy",500);
-
-        document.getElementById("lmDouble2").setAttribute("cx",60);
-        document.getElementById("lmDouble2").setAttribute("cy",520);
-
-        document.getElementById("lbHole").setAttribute("cx",110);
-        document.getElementById("lbHole").setAttribute("cy",365);
-
-        document.getElementById("lbHalf").setAttribute("cx",110);
-        document.getElementById("lbHalf").setAttribute("cy",320);
-
-        document.getElementById("lbDouble1").setAttribute("cx",75);
-        document.getElementById("lbDouble1").setAttribute("cy",355);
-
-        document.getElementById("lbDouble2").setAttribute("cx",60);
-        document.getElementById("lbDouble2").setAttribute("cy",375);
-
-        document.getElementById("leftCenter").setAttribute("cx",115);
-        document.getElementById("leftCenter").setAttribute("cy",440);
-
-        /*
-        RIGHT EAR (screen RIGHT)
-        */
-
-        document.getElementById("rtHole").setAttribute("cx",475);
-        document.getElementById("rtHole").setAttribute("cy",400);
-
-        document.getElementById("rtHalf").setAttribute("cx",535);
-        document.getElementById("rtHalf").setAttribute("cy",380);
-
-        document.getElementById("rtDouble1").setAttribute("cx",535);
-        document.getElementById("rtDouble1").setAttribute("cy",420);
-
-        document.getElementById("rtDouble2").setAttribute("cx",530);
-        document.getElementById("rtDouble2").setAttribute("cy",445);
-
-        document.getElementById("rmHole").setAttribute("cx",625);
-        document.getElementById("rmHole").setAttribute("cy",480);
-
-        document.getElementById("rmHalf").setAttribute("cx",670);
-        document.getElementById("rmHalf").setAttribute("cy",450);
-
-        document.getElementById("rmDouble1").setAttribute("cx",660);
-        document.getElementById("rmDouble1").setAttribute("cy",500);
-
-        document.getElementById("rmDouble2").setAttribute("cx",645);
-        document.getElementById("rmDouble2").setAttribute("cy",520);
-
-        document.getElementById("rbHole").setAttribute("cx",595);
-        document.getElementById("rbHole").setAttribute("cy",365);
-
-        document.getElementById("rbHalf").setAttribute("cx",595);
-        document.getElementById("rbHalf").setAttribute("cy",320);
-
-        document.getElementById("rbDouble1").setAttribute("cx",630);
-        document.getElementById("rbDouble1").setAttribute("cy",355);
-
-        document.getElementById("rbDouble2").setAttribute("cx",650);
-        document.getElementById("rbDouble2").setAttribute("cy",375);
-
-        document.getElementById("rightCenter").setAttribute("cx",590);
-        document.getElementById("rightCenter").setAttribute("cy",440);
+        placeAll(true);
 
         rightLabel.setAttribute("x","570");
         rightLabel.setAttribute("y","200");
 
         leftLabel.setAttribute("x","130");
         leftLabel.setAttribute("y","200");
+
     }
 
-    /*
-    ==========================================
-    FACING ME
-    ==========================================
-    */
+    /* FACING ME */
+
     else{
 
         mouseImage.classList.remove("imageFlipped");
 
-        document.getElementById("rtHole").setAttribute("cx",220);
-        document.getElementById("rtHole").setAttribute("cy",250);
-
-        document.getElementById("rtHalf").setAttribute("cx",170);
-        document.getElementById("rtHalf").setAttribute("cy",270);
-
-        document.getElementById("rtDouble1").setAttribute("cx",180);
-        document.getElementById("rtDouble1").setAttribute("cy",200);
-
-        document.getElementById("rtDouble2").setAttribute("cx",190);
-        document.getElementById("rtDouble2").setAttribute("cy",180);
-
-        document.getElementById("rmHole").setAttribute("cx",100);
-        document.getElementById("rmHole").setAttribute("cy",160);
-
-        document.getElementById("rmHalf").setAttribute("cx",90);
-        document.getElementById("rmHalf").setAttribute("cy",115);
-
-        document.getElementById("rmDouble1").setAttribute("cx",50);
-        document.getElementById("rmDouble1").setAttribute("cy",160);
-
-        document.getElementById("rmDouble2").setAttribute("cx",40);
-        document.getElementById("rmDouble2").setAttribute("cy",180);
-
-        document.getElementById("rbHole").setAttribute("cx",115);
-        document.getElementById("rbHole").setAttribute("cy",300);
-
-        document.getElementById("rbHalf").setAttribute("cx",120);
-        document.getElementById("rbHalf").setAttribute("cy",350);
-
-        document.getElementById("rbDouble1").setAttribute("cx",62);
-        document.getElementById("rbDouble1").setAttribute("cy",290);
-
-        document.getElementById("rbDouble2").setAttribute("cx",75);
-        document.getElementById("rbDouble2").setAttribute("cy",310);
-
-        document.getElementById("rightCenter").setAttribute("cx",120);
-        document.getElementById("rightCenter").setAttribute("cy",220);
-
-        document.getElementById("ltHole").setAttribute("cx",490);
-        document.getElementById("ltHole").setAttribute("cy",250);
-
-        document.getElementById("ltHalf").setAttribute("cx",540);
-        document.getElementById("ltHalf").setAttribute("cy",270);
-
-        document.getElementById("ltDouble1").setAttribute("cx",530);
-        document.getElementById("ltDouble1").setAttribute("cy",200);
-
-        document.getElementById("ltDouble2").setAttribute("cx",520);
-        document.getElementById("ltDouble2").setAttribute("cy",180);
-
-        document.getElementById("lmHole").setAttribute("cx",610);
-        document.getElementById("lmHole").setAttribute("cy",160);
-
-        document.getElementById("lmHalf").setAttribute("cx",620);
-        document.getElementById("lmHalf").setAttribute("cy",115);
-
-        document.getElementById("lmDouble1").setAttribute("cx",660);
-        document.getElementById("lmDouble1").setAttribute("cy",160);
-
-        document.getElementById("lmDouble2").setAttribute("cx",670);
-        document.getElementById("lmDouble2").setAttribute("cy",180);
-
-        document.getElementById("lbHole").setAttribute("cx",595);
-        document.getElementById("lbHole").setAttribute("cy",300);
-
-        document.getElementById("lbHalf").setAttribute("cx",590);
-        document.getElementById("lbHalf").setAttribute("cy",350);
-
-        document.getElementById("lbDouble1").setAttribute("cx",648);
-        document.getElementById("lbDouble1").setAttribute("cy",290);
-
-        document.getElementById("lbDouble2").setAttribute("cx",635);
-        document.getElementById("lbDouble2").setAttribute("cy",310);
-
-        document.getElementById("leftCenter").setAttribute("cx",590);
-        document.getElementById("leftCenter").setAttribute("cy",220);
+        placeAll(false);
 
         rightLabel.setAttribute("x","140");
         rightLabel.setAttribute("y","90");
 
         leftLabel.setAttribute("x","570");
         leftLabel.setAttribute("y","90");
+
     }
 
     rightLabel.textContent = "R";
@@ -1619,21 +1217,9 @@ READ SETTINGS FROM START SCREEN
 
 function loadModeSelections(){
 
-    trainingMode =
+    trainingMode = document.getElementById("trainingMode").value;
 
-    document
-    .getElementById(
-        "trainingMode"
-    )
-    .value;
-
-    orientationMode =
-
-    document
-    .getElementById(
-        "orientationMode"
-    )
-    .value;
+    orientationMode = document.getElementById("orientationMode").value;
 
     applyOrientation();
 
@@ -1647,48 +1233,25 @@ DIFFICULTY SETTINGS
 
 function applyDifficulty(){
 
-    const easyLabels =
-        document.getElementById("easyLabels");
-
-    const awayLabels =
-        document.getElementById("awayLabels");
-
-    const keyContent =
-        document.getElementById("keyContent");
-
-    const feedback =
-        document.getElementById("feedback");
+    const keyContent = document.getElementById("keyContent");
+    const feedback = document.getElementById("feedback");
 
     feedback.style.display = "block";
 
+    /* number labels only in Easy */
+
+    document.getElementById("labelLayer").style.display =
+        difficulty === "easy" ? "block" : "none";
+
     if(difficulty === "easy"){
-
-        // show whichever label set matches orientation
-        if(currentFacingAway){
-            easyLabels.style.display = "none";
-            awayLabels.style.display = "block";
-        }
-        else{
-            easyLabels.style.display = "block";
-            awayLabels.style.display = "none";
-        }
-
         keyContent.style.display = "block";
     }
 
     else if(difficulty === "medium"){
-
-        easyLabels.style.display = "none";
-        awayLabels.style.display = "none";
-
         keyContent.style.display = "block";
     }
 
     else if(difficulty === "hard"){
-
-        easyLabels.style.display = "none";
-        awayLabels.style.display = "none";
-
         keyContent.style.display = "none";
     }
 }
@@ -1708,11 +1271,7 @@ let currentQuestion = 0;
 let sessionScore = 0;
 let questions = [];
 
-document
-.getElementById(
-    "totalQuestions"
-)
-.innerHTML = 10;
+document.getElementById("totalQuestions").innerHTML = 10;
 
 let timerInterval;
 let startTime;
@@ -1723,7 +1282,6 @@ VALUE TABLE
 ********************************************/
 
 const values = {
-
     rightTop:{hole:1,half:4,double:7},
     rightMiddle:{hole:2,half:5,double:8},
     rightBottom:{hole:3,half:6,double:9},
@@ -1734,17 +1292,13 @@ const values = {
 };
 
 
-
 function generatePracticeNumbers(){
 
     let numbers = [];
 
-    while(
-        numbers.length < 5
-    ){
+    while(numbers.length < 5){
 
         let mouse = {
-
             rightTop:randomState(),
             rightMiddle:randomState(),
             rightBottom:randomState(),
@@ -1753,45 +1307,25 @@ function generatePracticeNumbers(){
             leftMiddle:randomState(),
             leftBottom:randomState(),
 
-            rightCenter:
-                Math.random() > .5,
-
-            leftCenter:
-                Math.random() > .5
+            rightCenter:Math.random() > .5,
+            leftCenter:Math.random() > .5
         };
 
-        let number =
-            mouseToNumber(mouse);
+        let number = mouseToNumber(mouse);
 
-        if(
-            number > 0 &&
-            number < 400
-        ){
-
-            numbers.push(
-                number
-            );
-
+        if(number > 0 && number < 400){
+            numbers.push(number);
         }
 
     }
 
-    document
-    .getElementById(
-        "practiceNumbers"
-    )
-    .style.display =
-    "block";
+    const box = document.getElementById("practiceNumbers");
 
-    document
-    .getElementById(
-        "practiceNumbers"
-    )
-    .innerHTML =
+    box.style.display = "block";
 
-        numbers.join(
-            " • "
-        );
+    box.innerHTML = numbers
+        .map(n => "<span class='chip'>" + n + "</span>")
+        .join("");
 
 }
 
@@ -1800,12 +1334,7 @@ function generatePracticeNumbers(){
 START BUTTON
 ********************************************/
 
-document
-.getElementById("startBtn")
-.addEventListener(
-    "click",
-    startSession
-);
+document.getElementById("startBtn").addEventListener("click",startSession);
 
 
 /********************************************
@@ -1814,8 +1343,7 @@ START SESSION
 
 function startSession(){
 
-    difficulty =
-    document.querySelector(
+    difficulty = document.querySelector(
         'input[name="difficulty"]:checked'
     ).value;
 
@@ -1823,42 +1351,20 @@ function startSession(){
 
     loadModeSelections();
 
-    document
-    .getElementById(
-        "practiceNumbers"
-    )
-    .style.display =
-    "none";
+    document.getElementById("practiceNumbers").style.display = "none";
 
-    document
-    .getElementById(
-        "startScreen"
-    ).style.display =
-    "none";
+    document.getElementById("startScreen").style.display = "none";
 
-    document
-    .getElementById(
-        "gameContainer"
-    ).style.display =
-    "block";
+    document.getElementById("gameContainer").style.display = "block";
 
     currentQuestion = 0;
     sessionScore = 0;
     questions = [];
 
-    document
-    .getElementById(
-        "totalQuestions"
-    )
-    .innerHTML =
-    10;
+    document.getElementById("totalQuestions").innerHTML = 10;
 
     for(let i=0;i<10;i++){
-
-        questions.push(
-            createMouse()
-        );
-
+        questions.push(createMouse());
     }
 
     loadQuestion(0);
@@ -1872,20 +1378,7 @@ RANDOM STATE
 
 function randomState(){
 
-    return [
-
-        "none",
-        "hole",
-        "half",
-        "double"
-
-    ][
-
-        Math.floor(
-            Math.random()*4
-        )
-
-    ];
+    return ["none","hole","half","double"][Math.floor(Math.random()*4)];
 
 }
 
@@ -1897,7 +1390,6 @@ CREATE RANDOM MOUSE
 function createMouse(){
 
     let mouse = {
-
         rightTop:"none",
         rightMiddle:"none",
         rightBottom:"none",
@@ -1910,141 +1402,61 @@ function createMouse(){
         leftCenter:false
     };
 
-    /*
-    RIGHT EAR DIGIT
-    0-9
-    */
+    /* RIGHT EAR DIGIT 0-9 */
 
-    let rightDigit =
-
-        Math.floor(
-            Math.random() * 10
-        );
+    let rightDigit = Math.floor(Math.random() * 10);
 
     switch(rightDigit){
-
-        case 1:
-            mouse.rightTop = "hole";
-            break;
-
-        case 2:
-            mouse.rightMiddle = "hole";
-            break;
-
-        case 3:
-            mouse.rightBottom = "hole";
-            break;
-
-        case 4:
-            mouse.rightTop = "half";
-            break;
-
-        case 5:
-            mouse.rightMiddle = "half";
-            break;
-
-        case 6:
-            mouse.rightBottom = "half";
-            break;
-
-        case 7:
-            mouse.rightTop = "double";
-            break;
-
-        case 8:
-            mouse.rightMiddle = "double";
-            break;
-
-        case 9:
-            mouse.rightBottom = "double";
-            break;
+        case 1: mouse.rightTop = "hole"; break;
+        case 2: mouse.rightMiddle = "hole"; break;
+        case 3: mouse.rightBottom = "hole"; break;
+        case 4: mouse.rightTop = "half"; break;
+        case 5: mouse.rightMiddle = "half"; break;
+        case 6: mouse.rightBottom = "half"; break;
+        case 7: mouse.rightTop = "double"; break;
+        case 8: mouse.rightMiddle = "double"; break;
+        case 9: mouse.rightBottom = "double"; break;
     }
 
-    /*
-    LEFT EAR DIGIT
-    0-9
-    */
+    /* LEFT EAR DIGIT 0-9 */
 
-    let leftDigit =
-
-        Math.floor(
-            Math.random() * 10
-        );
+    let leftDigit = Math.floor(Math.random() * 10);
 
     switch(leftDigit){
-
-        case 1:
-            mouse.leftTop = "hole";
-            break;
-
-        case 2:
-            mouse.leftMiddle = "hole";
-            break;
-
-        case 3:
-            mouse.leftBottom = "hole";
-            break;
-
-        case 4:
-            mouse.leftTop = "half";
-            break;
-
-        case 5:
-            mouse.leftMiddle = "half";
-            break;
-
-        case 6:
-            mouse.leftBottom = "half";
-            break;
-
-        case 7:
-            mouse.leftTop = "double";
-            break;
-
-        case 8:
-            mouse.leftMiddle = "double";
-            break;
-
-        case 9:
-            mouse.leftBottom = "double";
-            break;
+        case 1: mouse.leftTop = "hole"; break;
+        case 2: mouse.leftMiddle = "hole"; break;
+        case 3: mouse.leftBottom = "hole"; break;
+        case 4: mouse.leftTop = "half"; break;
+        case 5: mouse.leftMiddle = "half"; break;
+        case 6: mouse.leftBottom = "half"; break;
+        case 7: mouse.leftTop = "double"; break;
+        case 8: mouse.leftMiddle = "double"; break;
+        case 9: mouse.leftBottom = "double"; break;
     }
 
-    /*
-    CENTER DIGIT
-    0-3
-    */
+    /* CENTER DIGIT 0-3 */
 
-    let centerDigit =
-
-        Math.floor(
-            Math.random() * 4
-        );
+    let centerDigit = Math.floor(Math.random() * 4);
 
     switch(centerDigit){
-
         case 1:
             mouse.rightCenter = true;
             break;
-
         case 2:
             mouse.leftCenter = true;
             break;
-
         case 3:
             mouse.rightCenter = true;
             mouse.leftCenter = true;
             break;
     }
 
-    mouse.number =
-        mouseToNumber(
-            mouse
-        );
+    mouse.number = mouseToNumber(mouse);
 
     return mouse;
 
 }
+
 /********************************************
 MOUSE TO NUMBER
 ********************************************/
@@ -2091,21 +1503,22 @@ function mouseToNumber(mouse){
         centerDigit += 2;
     }
 
-    return (
-
-        centerDigit * 100 +
-
-        leftDigit * 10 +
-
-        rightDigit
-
-    );
+    return (centerDigit * 100 + leftDigit * 10 + rightDigit);
 
 }
 
 /********************************************
 QUESTION LOADING
 ********************************************/
+
+function updateProgress(){
+
+    const total = questions.length || 1;
+
+    document.getElementById("progressBar").style.width =
+        ((currentQuestion / total) * 100) + "%";
+
+}
 
 function loadQuestion(index){
 
@@ -2115,144 +1528,73 @@ function loadQuestion(index){
 
     clearHighlights();
 
-    document
-    .getElementById(
-        "questionNumber"
-    ).innerHTML =
-    index + 1;
+    document.getElementById("questionNumber").innerHTML = index + 1;
 
-    document
-    .getElementById(
-        "scoreLabel"
-    ).innerHTML =
-    sessionScore;
+    document.getElementById("scoreLabel").innerHTML = sessionScore;
 
-    document
-    .getElementById(
-        "feedback"
-    ).innerHTML =
-    "";
+    const feedback = document.getElementById("feedback");
+    feedback.innerHTML = "";
+    feedback.className = "";
 
-    document
-    .getElementById(
-        "nextBtn"
-    ).style.display =
-    "none";
+    document.getElementById("nextBtn").style.display = "none";
 
-    document
-    .getElementById(
-        "submitBtn"
-    ).disabled =
-    false;
+    document.getElementById("submitBtn").disabled = false;
 
-    let question =
-        questions[index];
+    updateProgress();
 
-    console.log(
-        "Current Mouse:",
-        question
-    );
+    let question = questions[index];
 
-    if(
-        trainingMode === "build"
-    ){
+    console.log("Current Mouse:", question);
 
-        document
-        .getElementById(
-            "earSvg"
-        )
-        .classList.remove(
-            "readModeSvg"
-        );
+    if(trainingMode === "build"){
 
-        document
-        .getElementById(
-            "targetNumber"
-        ).style.display =
-        "block";
+        document.getElementById("earSvg").classList.remove("readModeSvg");
 
-        document
-        .getElementById(
-            "targetNumber"
-        ).innerHTML =
+        document.getElementById("targetNumber").style.display = "block";
 
-        "Mouse # " +
-        question.number;
+        document.getElementById("targetNumber").innerHTML =
+            "Mouse # " + question.number;
 
-        document
-        .getElementById(
-            "readModePanel"
-        ).style.display =
-        "none";
+        document.getElementById("readModePanel").style.display = "none";
 
         clearMouseDisplay();
 
     }
     else{
 
-        document
-        .getElementById(
-            "earSvg"
-        )
-        .classList.add(
-            "readModeSvg"
-        );
+        document.getElementById("earSvg").classList.add("readModeSvg");
 
-        document
-        .getElementById(
-            "targetNumber"
-        ).style.display =
-        "none";
+        document.getElementById("targetNumber").style.display = "none";
 
-        document
-        .getElementById(
-            "readModePanel"
-        ).style.display =
-        "block";
+        document.getElementById("readModePanel").style.display = "block";
 
-        document
-        .getElementById(
-            "mouseNumberInput"
-        ).value = "";
+        const input = document.getElementById("mouseNumberInput");
+        input.value = "";
+        input.focus();
 
-        displayMouse(
-            question
-        );
+        displayMouse(question);
 
     }
 
     startTimer();
 
 }
+
 /********************************************
 TIMER
 ********************************************/
 
 function startTimer(){
 
-    clearInterval(
-        timerInterval
-    );
+    clearInterval(timerInterval);
 
-    startTime =
-        Date.now();
+    startTime = Date.now();
 
-    timerInterval =
-    setInterval(()=>{
+    timerInterval = setInterval(()=>{
 
-        let elapsed =
+        let elapsed = (Date.now() - startTime) / 1000;
 
-        (
-            Date.now()
-            -
-            startTime
-        ) / 1000;
-
-        document
-        .getElementById(
-            "timer"
-        ).innerHTML =
-        elapsed.toFixed(1);
+        document.getElementById("timer").innerHTML = elapsed.toFixed(1);
 
     },100);
 
@@ -2261,17 +1603,9 @@ function startTimer(){
 
 function stopTimer(){
 
-    clearInterval(
-        timerInterval
-    );
+    clearInterval(timerInterval);
 
-    return (
-
-        Date.now()
-        -
-        startTime
-
-    ) / 1000;
+    return (Date.now() - startTime) / 1000;
 }
 
 
@@ -2283,15 +1617,12 @@ function calculateAnswer(){
 
     let total = 0;
 
-    Object.keys(values)
-    .forEach(location=>{
+    Object.keys(values).forEach(location=>{
 
         let state = selections[location];
 
         if(state !== "none"){
-
             total += values[location][state];
-
         }
 
     });
@@ -2310,79 +1641,34 @@ function calculateAnswer(){
 function clearHighlights(){
 
     document
-    .querySelectorAll(
-        ".correct,.incorrect,.userCorrect,.selected"
-    )
+    .querySelectorAll(".correct,.incorrect,.userCorrect,.selected")
     .forEach(el=>{
 
-        el.classList.remove(
-            "correct"
-        );
-
-        el.classList.remove(
-            "incorrect"
-        );
-
-        el.classList.remove(
-            "userCorrect"
-        );
-
-        el.classList.remove(
-            "selected"
-        );
+        el.classList.remove("correct");
+        el.classList.remove("incorrect");
+        el.classList.remove("userCorrect");
+        el.classList.remove("selected");
 
     });
 
 }
 
-function colorLocation(
-    location,
-    state,
-    cssClass
-){
+function colorLocation(location,state,cssClass){
 
-    let cfg =
-    locations[
-        location
-    ];
+    let cfg = locations[location];
 
     if(state === "hole"){
-
-        document
-        .getElementById(
-            cfg.hole
-        )
-        .classList.add(
-            cssClass
-        );
-
+        document.getElementById(cfg.hole).classList.add(cssClass);
     }
 
     if(state === "half"){
-
-        document
-        .getElementById(
-            cfg.half
-        )
-        .classList.add(
-            cssClass
-        );
-
+        document.getElementById(cfg.half).classList.add(cssClass);
     }
 
     if(state === "double"){
-
-        cfg.double
-        .forEach(id=>{
-
-            document
-            .getElementById(id)
-            .classList.add(
-                cssClass
-            );
-
+        cfg.double.forEach(id=>{
+            document.getElementById(id).classList.add(cssClass);
         });
-
     }
 
 }
@@ -2392,118 +1678,46 @@ function highlightCorrectAnswer(target){
 
     clearHighlights();
 
-    Object.keys(values)
-    .forEach(location=>{
+    Object.keys(values).forEach(location=>{
 
-        let correctState =
-        target[location];
+        let correctState = target[location];
+        let userState = selections[location];
 
-        let userState =
-        selections[location];
-
-        if(
-            correctState !== "none"
-        ){
-
-            colorLocation(
-                location,
-                correctState,
-                "correct"
-            );
-
+        if(correctState !== "none"){
+            colorLocation(location,correctState,"correct");
         }
 
-        if(
-            userState !== "none"
-        ){
+        if(userState !== "none"){
 
-            if(
-                userState === correctState
-            ){
-
-                colorLocation(
-                    location,
-                    userState,
-                    "userCorrect"
-                );
-
+            if(userState === correctState){
+                colorLocation(location,userState,"userCorrect");
             }
             else{
-
-                colorLocation(
-                    location,
-                    userState,
-                    "incorrect"
-                );
-
+                colorLocation(location,userState,"incorrect");
             }
 
         }
 
     });
 
-    if(
-        target.rightCenter
-    ){
-
-        document
-        .getElementById(
-            "rightCenter"
-        )
-        .classList.add(
-            "correct"
-        );
-
+    if(target.rightCenter){
+        document.getElementById("rightCenter").classList.add("correct");
     }
 
-    if(
-        target.leftCenter
-    ){
-
-        document
-        .getElementById(
-            "leftCenter"
-        )
-        .classList.add(
-            "correct"
-        );
-
+    if(target.leftCenter){
+        document.getElementById("leftCenter").classList.add("correct");
     }
 
-    if(
-        selections.rightCenter
-    ){
-
-        document
-        .getElementById(
-            "rightCenter"
-        )
-        .classList.add(
-
-            target.rightCenter
-            ? "userCorrect"
-            : "incorrect"
-
+    if(selections.rightCenter){
+        document.getElementById("rightCenter").classList.add(
+            target.rightCenter ? "userCorrect" : "incorrect"
         );
-
     }
 
-    if(
-        selections.leftCenter
-    ){
-
-        document
-        .getElementById(
-            "leftCenter"
-        )
-        .classList.add(
-
-            target.leftCenter
-            ? "userCorrect"
-            : "incorrect"
-
+    if(selections.leftCenter){
+        document.getElementById("leftCenter").classList.add(
+            target.leftCenter ? "userCorrect" : "incorrect"
         );
-
     }
 
 }
@@ -2513,200 +1727,102 @@ function highlightCorrectAnswer(target){
 SUBMIT
 ********************************************/
 
-document
-.getElementById(
-    "submitBtn"
-)
-.addEventListener(
-    "click",
-    gradeAnswer
-);
+document.getElementById("submitBtn").addEventListener("click",gradeAnswer);
 
-document
-.getElementById(
-    "nextBtn"
-)
-.addEventListener(
-    "click",
-    nextQuestion
-);
+document.getElementById("nextBtn").addEventListener("click",nextQuestion);
 
-document
-.getElementById(
-    "mouseNumberInput"
-)
-.addEventListener(
-    "keydown",
-    function(event){
+document.getElementById("mouseNumberInput").addEventListener("keydown",function(event){
 
-        if(
-            event.key === "Enter" &&
-            trainingMode === "read" &&
-            !document.getElementById("submitBtn").disabled
-        ){
-
-            gradeAnswer();
-
-        }
-
-        if(
-            event.key === "ArrowRight" &&
-            trainingMode === "read" &&
-            document.getElementById("submitBtn").disabled
-        ){
-
-            nextQuestion();
-
-        }
-
+    if(
+        event.key === "Enter" &&
+        trainingMode === "read" &&
+        !document.getElementById("submitBtn").disabled
+    ){
+        gradeAnswer();
     }
-);
+
+    if(
+        event.key === "ArrowRight" &&
+        trainingMode === "read" &&
+        document.getElementById("submitBtn").disabled
+    ){
+        nextQuestion();
+    }
+
+});
 
 function gradeAnswer(){
 
-    let elapsed =
-        stopTimer();
+    let elapsed = stopTimer();
 
-    let target =
-        questions[
-            currentQuestion
-        ];
+    let target = questions[currentQuestion];
 
     let answer;
 
-    if(
-        trainingMode ===
-        "build"
-    ){
-
-        answer =
-        calculateAnswer();
-
+    if(trainingMode === "build"){
+        answer = calculateAnswer();
     }
     else{
-
-        answer =
-        parseInt(
-
-            document
-            .getElementById(
-                "mouseNumberInput"
-            ).value
-
-        );
-
+        answer = parseInt(document.getElementById("mouseNumberInput").value);
     }
 
-    let correct =
+    let correct = answer === target.number;
 
-    answer ===
-    target.number;
+    target.correct = correct;
+    target.answer = answer;
+    target.time = elapsed;
 
-    target.correct =
-        correct;
-
-    target.answer =
-        answer;
-
-    target.time =
-        elapsed;
+    const feedback = document.getElementById("feedback");
 
     if(correct){
 
         sessionScore++;
 
-        document
-        .getElementById(
-            "feedback"
-        ).innerHTML =
+        feedback.className = "ok";
 
-        "✅ Correct!";
+        feedback.innerHTML = "✅ Correct!";
 
     }
     else{
 
-        if(
-            trainingMode ===
-            "build"
-        ){
+        feedback.className = "bad";
 
-            document
-            .getElementById(
-                "feedback"
-            ).innerHTML =
+        if(trainingMode === "build"){
 
-            "❌ Incorrect" +
+            feedback.innerHTML =
+                "❌ <b>Incorrect</b>" +
+                "<br><br>" +
+                "Your Answer: " + answer +
+                "<br>" +
+                "Correct Answer: " + target.number +
+                "<br><br>" +
+                "Blue = your selections<br>" +
+                "Red = incorrect selections<br>" +
+                "Green outline = correct locations";
 
-            "<br><br>" +
-
-            "Your Answer: " +
-
-            answer +
-
-            "<br>" +
-
-            "Correct Answer: " +
-
-            target.number +
-
-            "<br><br>" +
-
-            "Blue = your selections<br>" +
-            "Red = incorrect selections<br>" +
-            "Green outline = correct locations";
-
-            highlightCorrectAnswer(
-                target
-            );
+            highlightCorrectAnswer(target);
 
         }
         else{
 
-            document
-            .getElementById(
-                "feedback"
-            ).innerHTML =
-
-            "❌ Incorrect" +
-
-            "<br><br>" +
-
-            "Your Answer: " +
-
-            answer +
-
-            "<br>" +
-
-            "Correct Answer: " +
-
-            target.number;
+            feedback.innerHTML =
+                "❌ <b>Incorrect</b>" +
+                "<br><br>" +
+                "Your Answer: " + answer +
+                "<br>" +
+                "Correct Answer: " + target.number;
 
         }
 
     }
 
-    document
-    .getElementById(
-        "scoreLabel"
-    ).innerHTML =
-    sessionScore;
+    document.getElementById("scoreLabel").innerHTML = sessionScore;
 
-    document
-    .getElementById(
-        "submitBtn"
-    ).disabled =
-    true;
+    document.getElementById("submitBtn").disabled = true;
 
-    document
-    .getElementById(
-        "nextBtn"
-    ).style.display =
-    "inline-block";
+    document.getElementById("nextBtn").style.display = "inline-block";
 
-    /*
-    Reapply difficulty settings
-    so labels only appear in Easy
-    */
+    /* Reapply difficulty settings so labels only appear in Easy */
 
     applyDifficulty();
 
@@ -2721,20 +1837,11 @@ function nextQuestion(){
 
     currentQuestion++;
 
-    if(
-        currentQuestion <
-        questions.length
-    ){
-
-        loadQuestion(
-            currentQuestion
-        );
-
+    if(currentQuestion < questions.length){
+        loadQuestion(currentQuestion);
     }
     else{
-
         showSummary();
-
     }
 
 }
@@ -2746,103 +1853,43 @@ SUMMARY
 
 function showSummary(){
 
-    document
-    .getElementById(
-        "gameContainer"
-    ).style.display =
-    "none";
+    document.getElementById("gameContainer").style.display = "none";
 
-    document
-    .getElementById(
-        "summary"
-    ).style.display =
-    "block";
+    document.getElementById("summary").style.display = "block";
 
     let totalTime = 0;
 
     questions.forEach(q=>{
-
-        totalTime +=
-        q.time || 0;
-
+        totalTime += q.time || 0;
     });
 
-    let average =
-        totalTime /
-        questions.length;
+    let average = totalTime / questions.length;
 
-    let percent =
-
-        (
-            sessionScore /
-            questions.length
-        ) * 100;
+    let percent = (sessionScore / questions.length) * 100;
 
     let html =
+        "<div class='statGrid'>" +
+            "<div class='stat'><b>" + sessionScore + "/" + questions.length + "</b><small>Correct</small></div>" +
+            "<div class='stat'><b>" + percent.toFixed(1) + "%</b><small>Accuracy</small></div>" +
+            "<div class='stat'><b>" + average.toFixed(1) + "s</b><small>Average time</small></div>" +
+        "</div>";
 
-        "<h3>" +
-
-        sessionScore +
-
-        "/" +
-
-        questions.length +
-
-        " Correct</h3>" +
-
-        "<p>" +
-
-        percent.toFixed(1) +
-
-        "% Accuracy</p>" +
-
-        "<p>Average Time: " +
-
-        average.toFixed(1) +
-
-        " sec</p>";
-
-    if(
-
-        questions.some(
-            q => !q.correct
-        )
-
-    ){
+    if(questions.some(q => !q.correct)){
 
         html +=
-
-        "<br><br>" +
-
-        "<button id='reviewErrorsBtn'>" +
-
-        "Review Incorrect Questions" +
-
-        "</button>";
+            "<br>" +
+            "<button id='reviewErrorsBtn'>" +
+            "Review Incorrect Questions" +
+            "</button>";
 
     }
 
-    document
-    .getElementById(
-        "summaryStats"
-    ).innerHTML =
-    html;
+    document.getElementById("summaryStats").innerHTML = html;
 
-    let reviewBtn =
-
-        document
-        .getElementById(
-            "reviewErrorsBtn"
-        );
+    let reviewBtn = document.getElementById("reviewErrorsBtn");
 
     if(reviewBtn){
-
-        reviewBtn
-        .addEventListener(
-            "click",
-            reviewErrors
-        );
-
+        reviewBtn.addEventListener("click",reviewErrors);
     }
 
 }
@@ -2854,34 +1901,17 @@ REVIEW INCORRECT
 
 function reviewErrors(){
 
-    questions =
-
-    questions.filter(
-        q => !q.correct
-    );
+    questions = questions.filter(q => !q.correct);
 
     currentQuestion = 0;
 
     sessionScore = 0;
 
-    document
-    .getElementById(
-        "totalQuestions"
-    )
-    .innerHTML =
-    questions.length;
+    document.getElementById("totalQuestions").innerHTML = questions.length;
 
-    document
-    .getElementById(
-        "summary"
-    ).style.display =
-    "none";
+    document.getElementById("summary").style.display = "none";
 
-    document
-    .getElementById(
-        "gameContainer"
-    ).style.display =
-    "block";
+    document.getElementById("gameContainer").style.display = "block";
 
     loadQuestion(0);
 
@@ -2893,65 +1923,31 @@ RETURN TO MENU
 
 function returnToMenu(){
 
-    clearInterval(
-        timerInterval
-    );
+    clearInterval(timerInterval);
 
     currentQuestion = 0;
     sessionScore = 0;
     questions = [];
 
-    document
-    .getElementById(
-        "feedback"
-    ).innerHTML = "";
+    const feedback = document.getElementById("feedback");
+    feedback.innerHTML = "";
+    feedback.className = "";
 
-    document
-    .getElementById(
-        "mouseNumberInput"
-    ).value = "";
+    document.getElementById("mouseNumberInput").value = "";
 
-    document
-    .getElementById(
-        "questionNumber"
-    ).innerHTML = "1";
-
-    document
-    .getElementById(
-        "totalQuestions"
-    ).innerHTML = "10";
-
-    document
-    .getElementById(
-        "scoreLabel"
-    ).innerHTML = "0";
-
-    document
-    .getElementById(
-        "timer"
-    ).innerHTML = "0.0";
+    document.getElementById("questionNumber").innerHTML = "1";
+    document.getElementById("totalQuestions").innerHTML = "10";
+    document.getElementById("scoreLabel").innerHTML = "0";
+    document.getElementById("timer").innerHTML = "0.0";
+    document.getElementById("progressBar").style.width = "0";
 
     resetSelections();
     renderSelections();
     clearHighlights();
 
-    document
-    .getElementById(
-        "summary"
-    ).style.display =
-    "none";
-
-    document
-    .getElementById(
-        "gameContainer"
-    ).style.display =
-    "none";
-
-    document
-    .getElementById(
-        "startScreen"
-    ).style.display =
-    "block";
+    document.getElementById("summary").style.display = "none";
+    document.getElementById("gameContainer").style.display = "none";
+    document.getElementById("startScreen").style.display = "block";
 
 }
 
@@ -2959,18 +1955,17 @@ function returnToMenu(){
 
 <div id="summary">
 
-    <h2>
-        Session Summary
-    </h2>
+    <div class="card">
 
-    <div id="summaryStats"></div>
+        <h2 style="font-size:22px;">Session Summary</h2>
 
-    <br>
+        <div id="summaryStats"></div>
 
-    <button
-        onclick="returnToMenu()">
-        Return To Menu
-    </button>
+        <br>
+
+        <button class="primary" onclick="returnToMenu()">Return To Menu</button>
+
+    </div>
 
 </div>
 
@@ -2978,7 +1973,5 @@ function returnToMenu(){
     Created by Brandon Trejo | Version 1.0 | 2026
 </div>
 
-
 </body>
-
 </html>
