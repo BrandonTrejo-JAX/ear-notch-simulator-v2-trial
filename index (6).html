@@ -1,0 +1,2984 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+JAX Mouse Ear Notch Simulator
+</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f5f5f5;
+    text-align:center;
+    margin:20px;
+}
+
+h1{
+    margin-bottom:10px;
+}
+
+button{
+
+    padding:10px 20px;
+    cursor:pointer;
+    margin:5px;
+}
+
+#startScreen{
+
+    margin-top:40px;
+}
+
+#gameContainer{
+
+    display:none;
+}
+
+#summary{
+
+    display:none;
+}
+
+#topBar{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:10px;
+
+    width:100%;
+}
+
+#statusBar{
+
+    display:flex;
+
+    gap:40px;
+
+    align-items:center;
+
+    font-weight:bold;
+}
+
+
+#targetNumber{
+
+    font-size:28px;
+
+    font-weight:bold;
+
+    margin:0;
+
+    text-align:center;
+
+    flex-grow:1;
+}
+
+#readModePanel{
+
+    display:none;
+    margin-bottom:5px;
+}
+
+#mouseNumberInput{
+
+    font-size:24px;
+    width:140px;
+    text-align:center;
+}
+
+.layout{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:15px;
+
+    align-items:flex-start;
+
+    margin-top:0;
+}
+
+#referenceKey{
+
+    width:250px;
+
+    min-width:250px;
+
+    background:white;
+
+    padding:10px 15px 15px 15px;
+
+    text-align:left;
+
+    border-radius:10px;
+
+    box-shadow:0 0 5px #ccc;
+
+    flex-shrink:0;
+}
+
+#earArea{
+
+    background:white;
+
+    padding:5px 15px 15px 15px;
+
+    border-radius:10px;
+
+    box-shadow:0 0 8px #ccc;
+}
+
+svg{
+
+    width:800px;
+    height:425px;
+}
+
+.readModeSvg{
+
+    height:325px !important;
+
+}
+
+.ear{
+
+    fill:#ececec;
+
+    stroke:black;
+
+    stroke-width:4;
+}
+
+.head{
+
+    fill:#ececec;
+
+    stroke:black;
+
+    stroke-width:4;
+}
+
+.eye{
+
+    fill:black;
+}
+
+.nose{
+
+    fill:black;
+}
+
+.hole{
+
+    fill:white;
+
+    stroke:black;
+
+    stroke-width:2;
+
+    cursor:pointer;
+}
+
+.half{
+
+    fill:white;
+
+    stroke:#666;
+
+    stroke-width:2;
+
+    cursor:pointer;
+}
+
+.double{
+
+    fill:white;
+
+    stroke:#666;
+
+    stroke-width:2;
+
+    cursor:pointer;
+}
+
+.center{
+
+    fill:white;
+
+    stroke:black;
+
+    stroke-width:3;
+
+    cursor:pointer;
+}
+
+.selected{
+
+    fill:#2196F3 !important;
+
+    stroke:#2196F3 !important;
+}
+
+.correct{
+
+    fill:none !important;
+
+    stroke:#4CAF50 !important;
+
+    stroke-width:6 !important;
+}
+
+.userCorrect{
+
+    fill:#2196F3 !important;
+
+    stroke:#4CAF50 !important;
+
+    stroke-width:5 !important;
+}
+
+
+.incorrect{
+
+    fill:#ff6666 !important;
+
+    stroke:#cc0000 !important;
+
+    stroke-width:4 !important;
+}
+
+.label{
+
+    font-size:16px;
+
+    font-weight:bold;
+
+    pointer-events:none;
+}
+
+
+.orientationLabel{
+
+    font-size:32px;
+    font-weight:bold;
+    fill:#666;
+    pointer-events:none;
+}
+
+.referenceTitle{
+
+    margin-top:0;
+
+    margin-bottom:20px;
+}
+
+#feedback{
+
+    margin-top:15px;
+
+    min-height:120px;
+
+    text-align:left;
+
+    font-size:16px;
+
+    font-weight:normal;
+}
+
+.imageFlipped{
+
+    transform:
+        translateY(100px)
+        scaleY(-1);
+
+    transform-origin:center center;
+
+}
+
+.notchesFacingAway{
+
+    transform:translate(0px, 0px);
+
+}
+
+#appFooter{
+    margin-top:30px;
+    font-size:12px;
+    color:#888;
+    text-align:center;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>
+🐭 JAX Mouse Ear Notch Simulator
+</h1>
+
+<div id="startScreen">
+
+    <h2>Select Difficulty</h2>
+
+    <label>
+        <input
+            type="radio"
+            name="difficulty"
+            value="easy"
+            checked
+        >
+        Easy
+    </label>
+
+    <label>
+        <input
+            type="radio"
+            name="difficulty"
+            value="medium"
+        >
+        Medium
+    </label>
+
+    <label>
+        <input
+            type="radio"
+            name="difficulty"
+            value="hard"
+        >
+        Hard
+    </label>
+
+    <br><br>
+
+    <h2>Training Mode</h2>
+
+    <select id="trainingMode">
+
+        <option value="build">
+            Ear Notching
+        </option>
+
+        <option value="read">
+            Reading Ear Notches
+        </option>
+
+    </select>
+
+    <br><br>
+
+    
+    <h2>Orientation</h2>
+
+    <select id="orientationMode">
+
+        <option value="facing">
+            Facing Me
+        </option>
+
+        <option value="away">
+            Facing Away
+        </option>
+
+        <option value="random">
+            Random
+        </option>
+
+    </select>
+
+    <br><br>
+
+    <button id="startBtn">
+        Start Training
+    </button>
+
+    <br><br>
+
+    <h2>Real Life Practice</h2>
+
+    <button
+        id="practiceNumbersBtn"
+        onclick="generatePracticeNumbers()">
+        Auto Generate 5 Numbers
+    </button>
+
+    <div
+        id="practiceNumbers"
+        style="
+            display:none;
+            margin-top:10px;
+            background:white;
+            padding:8px;
+            border-radius:10px;
+            box-shadow:0 0 5px #ccc;
+            font-size:20px;
+            font-weight:bold;
+            width:fit-content;
+            margin-left:auto;
+            margin-right:auto;
+        ">
+    </div>
+        <br><br>
+
+
+
+</div>
+
+<div id="gameContainer">
+
+    <div id="topBar">
+
+        <div id="statusBar">
+
+            <div>
+                Mouse
+                <span id="questionNumber">
+                    1
+                </span>/
+                <span id="totalQuestions">
+                    10
+                </span>
+            </div>
+
+            <div>
+                Time:
+                <span id="timer">
+                    0.0
+                </span>s
+            </div>
+
+            <div>
+                Score:
+                <span id="scoreLabel">
+                    0
+                </span>
+            </div>
+
+        </div>
+
+        <div id="targetNumber">
+
+            Mouse #000
+
+        </div>
+
+        <button
+            id="homeBtn"
+            onclick="returnToMenu()">
+            🏠 Return To Home
+        </button>
+
+    </div>
+
+    <div id="readModePanel">
+
+        <div>
+            Enter Mouse Number
+        </div>
+
+        <br>
+
+        <input
+            type="number"
+            id="mouseNumberInput"
+        >
+
+    </div>
+
+    <div class="layout">
+
+        <div id="referenceKey">
+
+            <div id="keyContent">
+
+                <h3 class="referenceTitle">
+                    Reference Key
+                </h3>
+
+                <b>Mouse Right Ear</b>
+
+                <br><br>
+
+                Hole: 1, 2, 3
+
+                <br>
+
+                Notch: 4, 5, 6
+
+                <br>
+
+                Double Notch: 7, 8, 9
+
+                <br>
+
+                Center: 100
+
+                <br><br><br>
+
+                <b>Mouse Left Ear</b>
+
+                <br><br>
+
+                Hole: 10, 20, 30
+
+                <br>
+
+                Notch: 40, 50, 60
+
+                <br>
+
+                Double Notch: 70, 80, 90
+
+                <br>
+
+                Center: 200
+
+                <hr style="margin-top:20px;">
+
+            </div>
+
+            <div id="feedback"></div>
+
+        </div>
+
+        <div id="earArea">
+
+            <svg
+                id="earSvg"
+                viewBox="0 40 850 560">
+
+                <g id="mouseBody">
+
+                    <image
+                        id="mouseImage"                        
+                        href="mouse_background.png"
+                        x="0"
+                        y="0"
+                        width="700"
+                        height="700"
+                    />
+
+                </g>
+
+<g id="notchLayer">
+
+
+<!-- ====================================== -->
+<!-- RIGHT EAR -->
+<!-- TOP -->
+<!-- ====================================== -->
+
+<circle id="rtHole"
+    class="hole"
+    cx="220"
+    cy="250"
+    r="16"/>
+
+<circle id="rtHalf"
+    class="half"
+    cx="170"
+    cy="270"
+    r="16"/>
+
+<circle id="rtDouble1"
+    class="double"
+    cx="180"
+    cy="200"
+    r="14"/>
+
+<circle id="rtDouble2"
+    class="double"
+    cx="190"
+    cy="180"
+    r="14"/>
+
+<!-- ====================================== -->
+<!-- RIGHT EAR -->
+<!-- MIDDLE -->
+<!-- ====================================== -->
+
+<circle id="rmHole"
+    class="hole"
+    cx="100"
+    cy="160"
+    r="16"/>
+
+<circle id="rmHalf"
+    class="half"
+    cx="90"
+    cy="115"
+    r="16"/>
+
+<circle id="rmDouble1"
+    class="double"
+    cx="50"
+    cy="160"
+    r="14"/>
+
+<circle id="rmDouble2"
+    class="double"
+    cx="40"
+    cy="180"
+    r="14"/>
+
+<!-- ====================================== -->
+<!-- RIGHT EAR -->
+<!-- BOTTOM -->
+<!-- ====================================== -->
+
+<circle id="rbHole"
+    class="hole"
+    cx="115"
+    cy="300"
+    r="16"/>
+
+<circle id="rbHalf"
+    class="half"
+    cx="120"
+    cy="350"
+    r="16"/>
+
+<circle id="rbDouble1"
+    class="double"
+    cx="62"
+    cy="290"
+    r="14"/>
+
+<circle id="rbDouble2"
+    class="double"
+    cx="75"
+    cy="310"
+    r="14"/>
+
+<!-- ====================================== -->
+<!-- RIGHT EAR CENTER -->
+<!-- ====================================== -->
+
+<circle id="rightCenter"
+    class="center"
+    cx="120"
+    cy="220"
+    r="24"/>
+
+<!-- ====================================== -->
+<!-- LEFT EAR -->
+<!-- TOP -->
+<!-- ====================================== -->
+
+<circle id="ltHole"
+    class="hole"
+    cx="490"
+    cy="250"
+    r="16"/>
+
+<circle id="ltHalf"
+    class="half"
+    cx="540"
+    cy="270"
+    r="16"/>
+
+<circle id="ltDouble1"
+    class="double"
+    cx="530"
+    cy="200"
+    r="14"/>
+
+<circle id="ltDouble2"
+    class="double"
+    cx="520"
+    cy="180"
+    r="14"/>
+
+<!-- ====================================== -->
+<!-- LEFT EAR -->
+<!-- MIDDLE -->
+<!-- ====================================== -->
+
+<circle id="lmHole"
+    class="hole"
+    cx="610"
+    cy="160"
+    r="16"/>
+
+<circle id="lmHalf"
+    class="half"
+    cx="620"
+    cy="115"
+    r="16"/>
+
+<circle id="lmDouble1"
+    class="double"
+    cx="660"
+    cy="160"
+    r="14"/>
+
+<circle id="lmDouble2"
+    class="double"
+    cx="670"
+    cy="180"
+    r="14"/>
+
+<!-- ====================================== -->
+<!-- LEFT EAR -->
+<!-- BOTTOM -->
+<!-- ====================================== -->
+
+<circle id="lbHole"
+    class="hole"
+    cx="595"
+    cy="300"
+    r="16"/>
+
+<circle id="lbHalf"
+    class="half"
+    cx="590"
+    cy="350"
+    r="16"/>
+
+<circle id="lbDouble1"
+    class="double"
+    cx="648"
+    cy="290"
+    r="14"/>
+
+<circle id="lbDouble2"
+    class="double"
+    cx="635"
+    cy="310"
+    r="14"/>
+
+<!-- ====================================== -->
+<!-- LEFT EAR CENTER -->
+<!-- ====================================== -->
+
+<circle id="leftCenter"
+    class="center"
+    cx="590"
+    cy="220"
+    r="24"/>
+
+</g>
+<!-- ====================================== -->
+<!-- EASY MODE LABELS -->
+<!-- ====================================== -->
+
+<!-- ====================================== -->
+<!-- FACING ME LABELS -->
+<!-- ====================================== -->
+
+<g id="easyLabels">
+
+    <!-- RIGHT EAR (mouse right, screen left) -->
+
+    <text class="label" x="215" y="255">1</text>
+    <text class="label" x="165" y="275">4</text>
+    <text class="label" x="205" y="205">7</text>
+
+    <text class="label" x="97" y="165">2</text>
+    <text class="label" x="86" y="120">5</text>
+    <text class="label" x="15" y="160">8</text>
+
+    <text class="label" x="113" y="305">3</text>
+    <text class="label" x="115" y="355">6</text>
+    <text class="label" x="40" y="320">9</text>
+
+    <text
+        class="label"
+        x="120"
+        y="225"
+        text-anchor="middle">
+        100
+    </text>
+
+    <!-- LEFT EAR (mouse left, screen right) -->
+
+    <text class="label" x="480" y="255">10</text>
+    <text class="label" x="532" y="275">40</text>
+    <text class="label" x="490" y="210">70</text>
+
+    <text class="label" x="600" y="165">20</text>
+    <text class="label" x="612" y="120">50</text>
+    <text class="label" x="685" y="165">80</text>
+
+    <text class="label" x="585" y="305">30</text>
+    <text class="label" x="580" y="356">60</text>
+    <text class="label" x="660" y="320">90</text>
+
+    <text
+        class="label"
+        x="590"
+        y="225"
+        text-anchor="middle">
+        200
+    </text>
+
+</g>
+
+<!-- ====================================== -->
+<!-- FACING AWAY LABELS -->
+<!-- ====================================== -->
+
+<g id="awayLabels" style="display:none;">
+
+    <!-- LEFT EAR NOW ON LEFT SIDE -->
+
+    <text class="label" x="220" y="405">10</text>
+    <text class="label" x="162" y="385">40</text>
+    <text class="label" x="190" y="430">70</text>
+
+    <text class="label" x="72" y="485">20</text>
+    <text class="label" x="30" y="455">50</text>
+    <text class="label" x="15" y="530">80</text>
+
+    <text class="label" x="100" y="370">30</text>
+    <text class="label" x="100" y="325">60</text>
+    <text class="label" x="35" y="355">90</text>
+
+    <text
+        class="label"
+        x="115"
+        y="445"
+        text-anchor="middle">
+        200
+    </text>
+
+    <!-- RIGHT EAR NOW ON RIGHT SIDE -->
+
+    <text class="label" x="470" y="405">1</text>
+    <text class="label" x="532" y="385">4</text>
+    <text class="label" x="505" y="435">7</text>
+
+    <text class="label" x="620" y="485">2</text>
+    <text class="label" x="665" y="455">5</text>
+    <text class="label" x="670" y="530">8</text>
+
+    <text class="label" x="590" y="370">3</text>
+    <text class="label" x="590" y="325">6</text>
+    <text class="label" x="655" y="355">9</text>
+
+    <text
+        class="label"
+        x="590"
+        y="445"
+        text-anchor="middle">
+        100
+    </text>
+
+</g>
+
+
+<!-- ====================================== -->
+<!-- EAR LABELS -->
+<!-- ====================================== -->
+
+<text
+    id="rightEarLabel"
+    class="orientationLabel"
+    x="230"
+    y="175"
+    text-anchor="middle">
+    R
+</text>
+
+<text
+    id="leftEarLabel"
+    class="orientationLabel"
+    x="620"
+    y="175"
+    text-anchor="middle">
+    L
+
+</text>
+
+</svg>
+
+<div>
+
+    <button id="submitBtn">
+        Submit Answer
+    </button>
+
+    <button
+        id="nextBtn"
+        style="display:none;">
+        Next Mouse
+    </button>
+
+</div>
+
+<div id="feedback"></div>
+
+</div> <!-- earArea -->
+
+</div> <!-- layout -->
+
+</div> <!-- gameContainer -->
+
+
+<script>
+
+/********************************************
+MODE SETTINGS
+********************************************/
+
+let trainingMode = "build";
+
+let orientationMode = "facing";
+
+let currentFacingAway = false;
+
+
+/********************************************
+SELECTION STATE
+********************************************/
+
+let selections = {
+
+    rightTop:"none",
+    rightMiddle:"none",
+    rightBottom:"none",
+
+    leftTop:"none",
+    leftMiddle:"none",
+    leftBottom:"none",
+
+    rightCenter:false,
+    leftCenter:false
+};
+
+
+/********************************************
+LOCATION DEFINITIONS
+********************************************/
+
+const locations = {
+
+    rightTop:{
+        hole:"rtHole",
+        half:"rtHalf",
+        double:["rtDouble1","rtDouble2"]
+    },
+
+    rightMiddle:{
+        hole:"rmHole",
+        half:"rmHalf",
+        double:["rmDouble1","rmDouble2"]
+    },
+
+    rightBottom:{
+        hole:"rbHole",
+        half:"rbHalf",
+        double:["rbDouble1","rbDouble2"]
+    },
+
+    leftTop:{
+        hole:"ltHole",
+        half:"ltHalf",
+        double:["ltDouble1","ltDouble2"]
+    },
+
+    leftMiddle:{
+        hole:"lmHole",
+        half:"lmHalf",
+        double:["lmDouble1","lmDouble2"]
+    },
+
+    leftBottom:{
+        hole:"lbHole",
+        half:"lbHalf",
+        double:["lbDouble1","lbDouble2"]
+    }
+
+};
+
+
+/********************************************
+CLEAR VISUALS
+********************************************/
+
+function clearSelectedVisuals(){
+
+    document
+    .querySelectorAll(
+        ".selected"
+    )
+    .forEach(el=>{
+
+        el.classList.remove(
+            "selected"
+        );
+
+    });
+
+}
+
+
+/********************************************
+RENDER SELECTIONS
+********************************************/
+
+function renderSelections(){
+
+    clearSelectedVisuals();
+
+    Object.keys(locations)
+    .forEach(location=>{
+
+        let state =
+        selections[
+            location
+        ];
+
+        if(
+            state === "none"
+        ){
+            return;
+        }
+
+        let cfg =
+        locations[
+            location
+        ];
+
+        if(
+            state === "hole"
+        ){
+
+            document
+            .getElementById(
+                cfg.hole
+            )
+            .classList.add(
+                "selected"
+            );
+        }
+
+        if(
+            state === "half"
+        ){
+
+            document
+            .getElementById(
+                cfg.half
+            )
+            .classList.add(
+                "selected"
+            );
+        }
+
+        if(
+            state === "double"
+        ){
+
+            cfg.double
+            .forEach(id=>{
+
+                document
+                .getElementById(id)
+                .classList.add(
+                    "selected"
+                );
+
+            });
+
+        }
+
+    });
+
+    if(
+        selections.rightCenter
+    ){
+
+        document
+        .getElementById(
+            "rightCenter"
+        )
+        .classList.add(
+            "selected"
+        );
+
+    }
+
+    if(
+        selections.leftCenter
+    ){
+
+        document
+        .getElementById(
+            "leftCenter"
+        )
+        .classList.add(
+            "selected"
+        );
+
+    }
+
+}
+
+
+/********************************************
+CHANGE STATE
+********************************************/
+
+function chooseState(location,state){
+
+    console.log("CLICKED:", location);
+
+    if(trainingMode === "read"){
+        return;
+    }
+
+    let actualLocation = location;
+
+    if(selections[actualLocation] === state){
+        selections[actualLocation] = "none";
+    }else{
+        selections[actualLocation] = state;
+    }
+
+    renderSelections();
+}
+
+
+/********************************************
+REGISTER LOCATION
+********************************************/
+
+function registerLocation(
+
+    location
+
+){
+
+    let cfg =
+    locations[
+        location
+    ];
+
+    document
+    .getElementById(
+        cfg.hole
+    )
+    .addEventListener(
+        "click",
+        ()=>{
+
+            chooseState(
+                location,
+                "hole"
+            );
+
+        }
+    );
+
+    document
+    .getElementById(
+        cfg.half
+    )
+    .addEventListener(
+        "click",
+        ()=>{
+
+            chooseState(
+                location,
+                "half"
+            );
+
+        }
+    );
+
+    cfg.double
+    .forEach(id=>{
+
+        document
+        .getElementById(id)
+        .addEventListener(
+            "click",
+            ()=>{
+
+                chooseState(
+                    location,
+                    "double"
+                );
+
+            }
+        );
+
+    });
+
+}
+
+
+/********************************************
+REGISTER ALL LOCATIONS
+********************************************/
+
+Object.keys(
+    locations
+)
+.forEach(location=>{
+
+    registerLocation(
+        location
+    );
+
+});
+
+
+/********************************************
+CENTERS
+********************************************/
+
+document
+.getElementById(
+    "rightCenter"
+)
+.addEventListener(
+    "click",
+    ()=>{
+
+        if(
+            trainingMode === "read"
+        ){
+            return;
+        }
+
+        selections
+        .rightCenter =
+        !selections
+        .rightCenter;
+
+        renderSelections();
+
+    }
+);
+
+document
+.getElementById(
+    "leftCenter"
+)
+.addEventListener(
+    "click",
+    ()=>{
+
+        if(
+            trainingMode === "read"
+        ){
+            return;
+        }
+
+        selections
+        .leftCenter =
+        !selections
+        .leftCenter;
+
+        renderSelections();
+
+    }
+);
+
+
+/********************************************
+RESET SELECTIONS
+********************************************/
+
+function resetSelections(){
+
+    selections = {
+
+        rightTop:"none",
+        rightMiddle:"none",
+        rightBottom:"none",
+
+        leftTop:"none",
+        leftMiddle:"none",
+        leftBottom:"none",
+
+        rightCenter:false,
+        leftCenter:false
+    };
+
+}
+
+
+/********************************************
+SHOW MOUSE
+USED FOR READ MODE
+********************************************/
+
+function displayMouse(mouse){
+
+    resetSelections();
+
+    Object.keys(locations)
+    .forEach(location=>{
+
+        selections[
+            location
+        ] =
+        mouse[
+            location
+        ];
+
+    });
+
+    selections.rightCenter =
+    mouse.rightCenter;
+
+    selections.leftCenter =
+    mouse.leftCenter;
+
+    renderSelections();
+
+}
+
+
+/********************************************
+CLEAR MOUSE DISPLAY
+USED FOR BUILD MODE
+********************************************/
+
+function clearMouseDisplay(){
+
+    resetSelections();
+
+    renderSelections();
+
+}
+
+
+/********************************************
+ORIENTATION
+********************************************/
+function applyOrientation(){
+
+    let mouseImage =
+    document.getElementById("mouseImage");
+
+    let rightLabel =
+    document.getElementById("rightEarLabel");
+
+    let leftLabel =
+    document.getElementById("leftEarLabel");
+
+    let facingLabels =
+    document.getElementById("easyLabels");
+
+    let awayLabels =
+    document.getElementById("awayLabels");
+
+    currentFacingAway = false;
+
+    if (orientationMode === "away"){
+        currentFacingAway = true;
+    }
+
+    if (orientationMode === "random"){
+        currentFacingAway = Math.random() > .5;
+    }
+
+    /*
+    LABELS
+    */
+
+    if(difficulty === "easy"){
+
+        if(currentFacingAway){
+            facingLabels.style.display = "none";
+            awayLabels.style.display = "block";
+        }
+        else{
+            facingLabels.style.display = "block";
+            awayLabels.style.display = "none";
+        }
+
+    }
+    else{
+
+        facingLabels.style.display = "none";
+        awayLabels.style.display = "none";
+
+    }
+
+    /*
+    ==========================================
+    FACING AWAY
+    ==========================================
+    */
+
+    if(currentFacingAway){
+
+        mouseImage.classList.add("imageFlipped");
+
+        /*
+        LEFT EAR (screen LEFT)
+        */
+
+        document.getElementById("ltHole").setAttribute("cx",230);
+        document.getElementById("ltHole").setAttribute("cy",400);
+
+        document.getElementById("ltHalf").setAttribute("cx",170);
+        document.getElementById("ltHalf").setAttribute("cy",380);
+
+        document.getElementById("ltDouble1").setAttribute("cx",170);
+        document.getElementById("ltDouble1").setAttribute("cy",420);
+
+        document.getElementById("ltDouble2").setAttribute("cx",175);
+        document.getElementById("ltDouble2").setAttribute("cy",445);
+
+        document.getElementById("lmHole").setAttribute("cx",80);
+        document.getElementById("lmHole").setAttribute("cy",480);
+
+        document.getElementById("lmHalf").setAttribute("cx",40);
+        document.getElementById("lmHalf").setAttribute("cy",450);
+
+        document.getElementById("lmDouble1").setAttribute("cx",45);
+        document.getElementById("lmDouble1").setAttribute("cy",500);
+
+        document.getElementById("lmDouble2").setAttribute("cx",60);
+        document.getElementById("lmDouble2").setAttribute("cy",520);
+
+        document.getElementById("lbHole").setAttribute("cx",110);
+        document.getElementById("lbHole").setAttribute("cy",365);
+
+        document.getElementById("lbHalf").setAttribute("cx",110);
+        document.getElementById("lbHalf").setAttribute("cy",320);
+
+        document.getElementById("lbDouble1").setAttribute("cx",75);
+        document.getElementById("lbDouble1").setAttribute("cy",355);
+
+        document.getElementById("lbDouble2").setAttribute("cx",60);
+        document.getElementById("lbDouble2").setAttribute("cy",375);
+
+        document.getElementById("leftCenter").setAttribute("cx",115);
+        document.getElementById("leftCenter").setAttribute("cy",440);
+
+        /*
+        RIGHT EAR (screen RIGHT)
+        */
+
+        document.getElementById("rtHole").setAttribute("cx",475);
+        document.getElementById("rtHole").setAttribute("cy",400);
+
+        document.getElementById("rtHalf").setAttribute("cx",535);
+        document.getElementById("rtHalf").setAttribute("cy",380);
+
+        document.getElementById("rtDouble1").setAttribute("cx",535);
+        document.getElementById("rtDouble1").setAttribute("cy",420);
+
+        document.getElementById("rtDouble2").setAttribute("cx",530);
+        document.getElementById("rtDouble2").setAttribute("cy",445);
+
+        document.getElementById("rmHole").setAttribute("cx",625);
+        document.getElementById("rmHole").setAttribute("cy",480);
+
+        document.getElementById("rmHalf").setAttribute("cx",670);
+        document.getElementById("rmHalf").setAttribute("cy",450);
+
+        document.getElementById("rmDouble1").setAttribute("cx",660);
+        document.getElementById("rmDouble1").setAttribute("cy",500);
+
+        document.getElementById("rmDouble2").setAttribute("cx",645);
+        document.getElementById("rmDouble2").setAttribute("cy",520);
+
+        document.getElementById("rbHole").setAttribute("cx",595);
+        document.getElementById("rbHole").setAttribute("cy",365);
+
+        document.getElementById("rbHalf").setAttribute("cx",595);
+        document.getElementById("rbHalf").setAttribute("cy",320);
+
+        document.getElementById("rbDouble1").setAttribute("cx",630);
+        document.getElementById("rbDouble1").setAttribute("cy",355);
+
+        document.getElementById("rbDouble2").setAttribute("cx",650);
+        document.getElementById("rbDouble2").setAttribute("cy",375);
+
+        document.getElementById("rightCenter").setAttribute("cx",590);
+        document.getElementById("rightCenter").setAttribute("cy",440);
+
+        rightLabel.setAttribute("x","570");
+        rightLabel.setAttribute("y","200");
+
+        leftLabel.setAttribute("x","130");
+        leftLabel.setAttribute("y","200");
+    }
+
+    /*
+    ==========================================
+    FACING ME
+    ==========================================
+    */
+    else{
+
+        mouseImage.classList.remove("imageFlipped");
+
+        document.getElementById("rtHole").setAttribute("cx",220);
+        document.getElementById("rtHole").setAttribute("cy",250);
+
+        document.getElementById("rtHalf").setAttribute("cx",170);
+        document.getElementById("rtHalf").setAttribute("cy",270);
+
+        document.getElementById("rtDouble1").setAttribute("cx",180);
+        document.getElementById("rtDouble1").setAttribute("cy",200);
+
+        document.getElementById("rtDouble2").setAttribute("cx",190);
+        document.getElementById("rtDouble2").setAttribute("cy",180);
+
+        document.getElementById("rmHole").setAttribute("cx",100);
+        document.getElementById("rmHole").setAttribute("cy",160);
+
+        document.getElementById("rmHalf").setAttribute("cx",90);
+        document.getElementById("rmHalf").setAttribute("cy",115);
+
+        document.getElementById("rmDouble1").setAttribute("cx",50);
+        document.getElementById("rmDouble1").setAttribute("cy",160);
+
+        document.getElementById("rmDouble2").setAttribute("cx",40);
+        document.getElementById("rmDouble2").setAttribute("cy",180);
+
+        document.getElementById("rbHole").setAttribute("cx",115);
+        document.getElementById("rbHole").setAttribute("cy",300);
+
+        document.getElementById("rbHalf").setAttribute("cx",120);
+        document.getElementById("rbHalf").setAttribute("cy",350);
+
+        document.getElementById("rbDouble1").setAttribute("cx",62);
+        document.getElementById("rbDouble1").setAttribute("cy",290);
+
+        document.getElementById("rbDouble2").setAttribute("cx",75);
+        document.getElementById("rbDouble2").setAttribute("cy",310);
+
+        document.getElementById("rightCenter").setAttribute("cx",120);
+        document.getElementById("rightCenter").setAttribute("cy",220);
+
+        document.getElementById("ltHole").setAttribute("cx",490);
+        document.getElementById("ltHole").setAttribute("cy",250);
+
+        document.getElementById("ltHalf").setAttribute("cx",540);
+        document.getElementById("ltHalf").setAttribute("cy",270);
+
+        document.getElementById("ltDouble1").setAttribute("cx",530);
+        document.getElementById("ltDouble1").setAttribute("cy",200);
+
+        document.getElementById("ltDouble2").setAttribute("cx",520);
+        document.getElementById("ltDouble2").setAttribute("cy",180);
+
+        document.getElementById("lmHole").setAttribute("cx",610);
+        document.getElementById("lmHole").setAttribute("cy",160);
+
+        document.getElementById("lmHalf").setAttribute("cx",620);
+        document.getElementById("lmHalf").setAttribute("cy",115);
+
+        document.getElementById("lmDouble1").setAttribute("cx",660);
+        document.getElementById("lmDouble1").setAttribute("cy",160);
+
+        document.getElementById("lmDouble2").setAttribute("cx",670);
+        document.getElementById("lmDouble2").setAttribute("cy",180);
+
+        document.getElementById("lbHole").setAttribute("cx",595);
+        document.getElementById("lbHole").setAttribute("cy",300);
+
+        document.getElementById("lbHalf").setAttribute("cx",590);
+        document.getElementById("lbHalf").setAttribute("cy",350);
+
+        document.getElementById("lbDouble1").setAttribute("cx",648);
+        document.getElementById("lbDouble1").setAttribute("cy",290);
+
+        document.getElementById("lbDouble2").setAttribute("cx",635);
+        document.getElementById("lbDouble2").setAttribute("cy",310);
+
+        document.getElementById("leftCenter").setAttribute("cx",590);
+        document.getElementById("leftCenter").setAttribute("cy",220);
+
+        rightLabel.setAttribute("x","140");
+        rightLabel.setAttribute("y","90");
+
+        leftLabel.setAttribute("x","570");
+        leftLabel.setAttribute("y","90");
+    }
+
+    rightLabel.textContent = "R";
+    leftLabel.textContent = "L";
+}
+
+
+/********************************************
+READ SETTINGS FROM START SCREEN
+********************************************/
+
+function loadModeSelections(){
+
+    trainingMode =
+
+    document
+    .getElementById(
+        "trainingMode"
+    )
+    .value;
+
+    orientationMode =
+
+    document
+    .getElementById(
+        "orientationMode"
+    )
+    .value;
+
+    applyOrientation();
+
+    applyDifficulty();
+
+}
+
+/********************************************
+DIFFICULTY SETTINGS
+********************************************/
+
+function applyDifficulty(){
+
+    const easyLabels =
+        document.getElementById("easyLabels");
+
+    const awayLabels =
+        document.getElementById("awayLabels");
+
+    const keyContent =
+        document.getElementById("keyContent");
+
+    const feedback =
+        document.getElementById("feedback");
+
+    feedback.style.display = "block";
+
+    if(difficulty === "easy"){
+
+        // show whichever label set matches orientation
+        if(currentFacingAway){
+            easyLabels.style.display = "none";
+            awayLabels.style.display = "block";
+        }
+        else{
+            easyLabels.style.display = "block";
+            awayLabels.style.display = "none";
+        }
+
+        keyContent.style.display = "block";
+    }
+
+    else if(difficulty === "medium"){
+
+        easyLabels.style.display = "none";
+        awayLabels.style.display = "none";
+
+        keyContent.style.display = "block";
+    }
+
+    else if(difficulty === "hard"){
+
+        easyLabels.style.display = "none";
+        awayLabels.style.display = "none";
+
+        keyContent.style.display = "none";
+    }
+}
+
+/********************************************
+INITIAL DRAW
+********************************************/
+
+renderSelections();
+
+/********************************************
+GAME VARIABLES
+********************************************/
+
+let difficulty = "easy";
+let currentQuestion = 0;
+let sessionScore = 0;
+let questions = [];
+
+document
+.getElementById(
+    "totalQuestions"
+)
+.innerHTML = 10;
+
+let timerInterval;
+let startTime;
+
+
+/********************************************
+VALUE TABLE
+********************************************/
+
+const values = {
+
+    rightTop:{hole:1,half:4,double:7},
+    rightMiddle:{hole:2,half:5,double:8},
+    rightBottom:{hole:3,half:6,double:9},
+
+    leftTop:{hole:10,half:40,double:70},
+    leftMiddle:{hole:20,half:50,double:80},
+    leftBottom:{hole:30,half:60,double:90}
+};
+
+
+
+function generatePracticeNumbers(){
+
+    let numbers = [];
+
+    while(
+        numbers.length < 5
+    ){
+
+        let mouse = {
+
+            rightTop:randomState(),
+            rightMiddle:randomState(),
+            rightBottom:randomState(),
+
+            leftTop:randomState(),
+            leftMiddle:randomState(),
+            leftBottom:randomState(),
+
+            rightCenter:
+                Math.random() > .5,
+
+            leftCenter:
+                Math.random() > .5
+        };
+
+        let number =
+            mouseToNumber(mouse);
+
+        if(
+            number > 0 &&
+            number < 400
+        ){
+
+            numbers.push(
+                number
+            );
+
+        }
+
+    }
+
+    document
+    .getElementById(
+        "practiceNumbers"
+    )
+    .style.display =
+    "block";
+
+    document
+    .getElementById(
+        "practiceNumbers"
+    )
+    .innerHTML =
+
+        numbers.join(
+            " • "
+        );
+
+}
+
+
+/********************************************
+START BUTTON
+********************************************/
+
+document
+.getElementById("startBtn")
+.addEventListener(
+    "click",
+    startSession
+);
+
+
+/********************************************
+START SESSION
+********************************************/
+
+function startSession(){
+
+    difficulty =
+    document.querySelector(
+        'input[name="difficulty"]:checked'
+    ).value;
+
+    applyDifficulty();
+
+    loadModeSelections();
+
+    document
+    .getElementById(
+        "practiceNumbers"
+    )
+    .style.display =
+    "none";
+
+    document
+    .getElementById(
+        "startScreen"
+    ).style.display =
+    "none";
+
+    document
+    .getElementById(
+        "gameContainer"
+    ).style.display =
+    "block";
+
+    currentQuestion = 0;
+    sessionScore = 0;
+    questions = [];
+
+    document
+    .getElementById(
+        "totalQuestions"
+    )
+    .innerHTML =
+    10;
+
+    for(let i=0;i<10;i++){
+
+        questions.push(
+            createMouse()
+        );
+
+    }
+
+    loadQuestion(0);
+
+}
+
+
+/********************************************
+RANDOM STATE
+********************************************/
+
+function randomState(){
+
+    return [
+
+        "none",
+        "hole",
+        "half",
+        "double"
+
+    ][
+
+        Math.floor(
+            Math.random()*4
+        )
+
+    ];
+
+}
+
+
+/********************************************
+CREATE RANDOM MOUSE
+********************************************/
+
+function createMouse(){
+
+    let mouse = {
+
+        rightTop:"none",
+        rightMiddle:"none",
+        rightBottom:"none",
+
+        leftTop:"none",
+        leftMiddle:"none",
+        leftBottom:"none",
+
+        rightCenter:false,
+        leftCenter:false
+    };
+
+    /*
+    RIGHT EAR DIGIT
+    0-9
+    */
+
+    let rightDigit =
+
+        Math.floor(
+            Math.random() * 10
+        );
+
+    switch(rightDigit){
+
+        case 1:
+            mouse.rightTop = "hole";
+            break;
+
+        case 2:
+            mouse.rightMiddle = "hole";
+            break;
+
+        case 3:
+            mouse.rightBottom = "hole";
+            break;
+
+        case 4:
+            mouse.rightTop = "half";
+            break;
+
+        case 5:
+            mouse.rightMiddle = "half";
+            break;
+
+        case 6:
+            mouse.rightBottom = "half";
+            break;
+
+        case 7:
+            mouse.rightTop = "double";
+            break;
+
+        case 8:
+            mouse.rightMiddle = "double";
+            break;
+
+        case 9:
+            mouse.rightBottom = "double";
+            break;
+    }
+
+    /*
+    LEFT EAR DIGIT
+    0-9
+    */
+
+    let leftDigit =
+
+        Math.floor(
+            Math.random() * 10
+        );
+
+    switch(leftDigit){
+
+        case 1:
+            mouse.leftTop = "hole";
+            break;
+
+        case 2:
+            mouse.leftMiddle = "hole";
+            break;
+
+        case 3:
+            mouse.leftBottom = "hole";
+            break;
+
+        case 4:
+            mouse.leftTop = "half";
+            break;
+
+        case 5:
+            mouse.leftMiddle = "half";
+            break;
+
+        case 6:
+            mouse.leftBottom = "half";
+            break;
+
+        case 7:
+            mouse.leftTop = "double";
+            break;
+
+        case 8:
+            mouse.leftMiddle = "double";
+            break;
+
+        case 9:
+            mouse.leftBottom = "double";
+            break;
+    }
+
+    /*
+    CENTER DIGIT
+    0-3
+    */
+
+    let centerDigit =
+
+        Math.floor(
+            Math.random() * 4
+        );
+
+    switch(centerDigit){
+
+        case 1:
+            mouse.rightCenter = true;
+            break;
+
+        case 2:
+            mouse.leftCenter = true;
+            break;
+
+        case 3:
+            mouse.rightCenter = true;
+            mouse.leftCenter = true;
+            break;
+    }
+
+    mouse.number =
+        mouseToNumber(
+            mouse
+        );
+
+    return mouse;
+
+}
+/********************************************
+MOUSE TO NUMBER
+********************************************/
+
+function mouseToNumber(mouse){
+
+    let rightDigit = 0;
+
+    if(mouse.rightTop === "hole") rightDigit = 1;
+    if(mouse.rightMiddle === "hole") rightDigit = 2;
+    if(mouse.rightBottom === "hole") rightDigit = 3;
+
+    if(mouse.rightTop === "half") rightDigit = 4;
+    if(mouse.rightMiddle === "half") rightDigit = 5;
+    if(mouse.rightBottom === "half") rightDigit = 6;
+
+    if(mouse.rightTop === "double") rightDigit = 7;
+    if(mouse.rightMiddle === "double") rightDigit = 8;
+    if(mouse.rightBottom === "double") rightDigit = 9;
+
+
+    let leftDigit = 0;
+
+    if(mouse.leftTop === "hole") leftDigit = 1;
+    if(mouse.leftMiddle === "hole") leftDigit = 2;
+    if(mouse.leftBottom === "hole") leftDigit = 3;
+
+    if(mouse.leftTop === "half") leftDigit = 4;
+    if(mouse.leftMiddle === "half") leftDigit = 5;
+    if(mouse.leftBottom === "half") leftDigit = 6;
+
+    if(mouse.leftTop === "double") leftDigit = 7;
+    if(mouse.leftMiddle === "double") leftDigit = 8;
+    if(mouse.leftBottom === "double") leftDigit = 9;
+
+
+    let centerDigit = 0;
+
+    if(mouse.rightCenter){
+        centerDigit += 1;
+    }
+
+    if(mouse.leftCenter){
+        centerDigit += 2;
+    }
+
+    return (
+
+        centerDigit * 100 +
+
+        leftDigit * 10 +
+
+        rightDigit
+
+    );
+
+}
+
+/********************************************
+QUESTION LOADING
+********************************************/
+
+function loadQuestion(index){
+
+    applyOrientation();
+
+    applyDifficulty();
+
+    clearHighlights();
+
+    document
+    .getElementById(
+        "questionNumber"
+    ).innerHTML =
+    index + 1;
+
+    document
+    .getElementById(
+        "scoreLabel"
+    ).innerHTML =
+    sessionScore;
+
+    document
+    .getElementById(
+        "feedback"
+    ).innerHTML =
+    "";
+
+    document
+    .getElementById(
+        "nextBtn"
+    ).style.display =
+    "none";
+
+    document
+    .getElementById(
+        "submitBtn"
+    ).disabled =
+    false;
+
+    let question =
+        questions[index];
+
+    console.log(
+        "Current Mouse:",
+        question
+    );
+
+    if(
+        trainingMode === "build"
+    ){
+
+        document
+        .getElementById(
+            "earSvg"
+        )
+        .classList.remove(
+            "readModeSvg"
+        );
+
+        document
+        .getElementById(
+            "targetNumber"
+        ).style.display =
+        "block";
+
+        document
+        .getElementById(
+            "targetNumber"
+        ).innerHTML =
+
+        "Mouse # " +
+        question.number;
+
+        document
+        .getElementById(
+            "readModePanel"
+        ).style.display =
+        "none";
+
+        clearMouseDisplay();
+
+    }
+    else{
+
+        document
+        .getElementById(
+            "earSvg"
+        )
+        .classList.add(
+            "readModeSvg"
+        );
+
+        document
+        .getElementById(
+            "targetNumber"
+        ).style.display =
+        "none";
+
+        document
+        .getElementById(
+            "readModePanel"
+        ).style.display =
+        "block";
+
+        document
+        .getElementById(
+            "mouseNumberInput"
+        ).value = "";
+
+        displayMouse(
+            question
+        );
+
+    }
+
+    startTimer();
+
+}
+/********************************************
+TIMER
+********************************************/
+
+function startTimer(){
+
+    clearInterval(
+        timerInterval
+    );
+
+    startTime =
+        Date.now();
+
+    timerInterval =
+    setInterval(()=>{
+
+        let elapsed =
+
+        (
+            Date.now()
+            -
+            startTime
+        ) / 1000;
+
+        document
+        .getElementById(
+            "timer"
+        ).innerHTML =
+        elapsed.toFixed(1);
+
+    },100);
+
+}
+
+
+function stopTimer(){
+
+    clearInterval(
+        timerInterval
+    );
+
+    return (
+
+        Date.now()
+        -
+        startTime
+
+    ) / 1000;
+}
+
+
+/********************************************
+ANSWER CALCULATION
+********************************************/
+
+function calculateAnswer(){
+
+    let total = 0;
+
+    Object.keys(values)
+    .forEach(location=>{
+
+        let state = selections[location];
+
+        if(state !== "none"){
+
+            total += values[location][state];
+
+        }
+
+    });
+
+    if(selections.rightCenter){
+        total += 100;
+    }
+
+    if(selections.leftCenter){
+        total += 200;
+    }
+
+    return total;
+}
+
+function clearHighlights(){
+
+    document
+    .querySelectorAll(
+        ".correct,.incorrect,.userCorrect,.selected"
+    )
+    .forEach(el=>{
+
+        el.classList.remove(
+            "correct"
+        );
+
+        el.classList.remove(
+            "incorrect"
+        );
+
+        el.classList.remove(
+            "userCorrect"
+        );
+
+        el.classList.remove(
+            "selected"
+        );
+
+    });
+
+}
+
+function colorLocation(
+    location,
+    state,
+    cssClass
+){
+
+    let cfg =
+    locations[
+        location
+    ];
+
+    if(state === "hole"){
+
+        document
+        .getElementById(
+            cfg.hole
+        )
+        .classList.add(
+            cssClass
+        );
+
+    }
+
+    if(state === "half"){
+
+        document
+        .getElementById(
+            cfg.half
+        )
+        .classList.add(
+            cssClass
+        );
+
+    }
+
+    if(state === "double"){
+
+        cfg.double
+        .forEach(id=>{
+
+            document
+            .getElementById(id)
+            .classList.add(
+                cssClass
+            );
+
+        });
+
+    }
+
+}
+
+
+function highlightCorrectAnswer(target){
+
+    clearHighlights();
+
+    Object.keys(values)
+    .forEach(location=>{
+
+        let correctState =
+        target[location];
+
+        let userState =
+        selections[location];
+
+        if(
+            correctState !== "none"
+        ){
+
+            colorLocation(
+                location,
+                correctState,
+                "correct"
+            );
+
+        }
+
+        if(
+            userState !== "none"
+        ){
+
+            if(
+                userState === correctState
+            ){
+
+                colorLocation(
+                    location,
+                    userState,
+                    "userCorrect"
+                );
+
+            }
+            else{
+
+                colorLocation(
+                    location,
+                    userState,
+                    "incorrect"
+                );
+
+            }
+
+        }
+
+    });
+
+    if(
+        target.rightCenter
+    ){
+
+        document
+        .getElementById(
+            "rightCenter"
+        )
+        .classList.add(
+            "correct"
+        );
+
+    }
+
+    if(
+        target.leftCenter
+    ){
+
+        document
+        .getElementById(
+            "leftCenter"
+        )
+        .classList.add(
+            "correct"
+        );
+
+    }
+
+    if(
+        selections.rightCenter
+    ){
+
+        document
+        .getElementById(
+            "rightCenter"
+        )
+        .classList.add(
+
+            target.rightCenter
+            ? "userCorrect"
+            : "incorrect"
+
+        );
+
+    }
+
+    if(
+        selections.leftCenter
+    ){
+
+        document
+        .getElementById(
+            "leftCenter"
+        )
+        .classList.add(
+
+            target.leftCenter
+            ? "userCorrect"
+            : "incorrect"
+
+        );
+
+    }
+
+}
+
+
+/********************************************
+SUBMIT
+********************************************/
+
+document
+.getElementById(
+    "submitBtn"
+)
+.addEventListener(
+    "click",
+    gradeAnswer
+);
+
+document
+.getElementById(
+    "nextBtn"
+)
+.addEventListener(
+    "click",
+    nextQuestion
+);
+
+document
+.getElementById(
+    "mouseNumberInput"
+)
+.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.key === "Enter" &&
+            trainingMode === "read" &&
+            !document.getElementById("submitBtn").disabled
+        ){
+
+            gradeAnswer();
+
+        }
+
+        if(
+            event.key === "ArrowRight" &&
+            trainingMode === "read" &&
+            document.getElementById("submitBtn").disabled
+        ){
+
+            nextQuestion();
+
+        }
+
+    }
+);
+
+function gradeAnswer(){
+
+    let elapsed =
+        stopTimer();
+
+    let target =
+        questions[
+            currentQuestion
+        ];
+
+    let answer;
+
+    if(
+        trainingMode ===
+        "build"
+    ){
+
+        answer =
+        calculateAnswer();
+
+    }
+    else{
+
+        answer =
+        parseInt(
+
+            document
+            .getElementById(
+                "mouseNumberInput"
+            ).value
+
+        );
+
+    }
+
+    let correct =
+
+    answer ===
+    target.number;
+
+    target.correct =
+        correct;
+
+    target.answer =
+        answer;
+
+    target.time =
+        elapsed;
+
+    if(correct){
+
+        sessionScore++;
+
+        document
+        .getElementById(
+            "feedback"
+        ).innerHTML =
+
+        "✅ Correct!";
+
+    }
+    else{
+
+        if(
+            trainingMode ===
+            "build"
+        ){
+
+            document
+            .getElementById(
+                "feedback"
+            ).innerHTML =
+
+            "❌ Incorrect" +
+
+            "<br><br>" +
+
+            "Your Answer: " +
+
+            answer +
+
+            "<br>" +
+
+            "Correct Answer: " +
+
+            target.number +
+
+            "<br><br>" +
+
+            "Blue = your selections<br>" +
+            "Red = incorrect selections<br>" +
+            "Green outline = correct locations";
+
+            highlightCorrectAnswer(
+                target
+            );
+
+        }
+        else{
+
+            document
+            .getElementById(
+                "feedback"
+            ).innerHTML =
+
+            "❌ Incorrect" +
+
+            "<br><br>" +
+
+            "Your Answer: " +
+
+            answer +
+
+            "<br>" +
+
+            "Correct Answer: " +
+
+            target.number;
+
+        }
+
+    }
+
+    document
+    .getElementById(
+        "scoreLabel"
+    ).innerHTML =
+    sessionScore;
+
+    document
+    .getElementById(
+        "submitBtn"
+    ).disabled =
+    true;
+
+    document
+    .getElementById(
+        "nextBtn"
+    ).style.display =
+    "inline-block";
+
+    /*
+    Reapply difficulty settings
+    so labels only appear in Easy
+    */
+
+    applyDifficulty();
+
+}
+
+
+/********************************************
+NEXT QUESTION
+********************************************/
+
+function nextQuestion(){
+
+    currentQuestion++;
+
+    if(
+        currentQuestion <
+        questions.length
+    ){
+
+        loadQuestion(
+            currentQuestion
+        );
+
+    }
+    else{
+
+        showSummary();
+
+    }
+
+}
+
+
+/********************************************
+SUMMARY
+********************************************/
+
+function showSummary(){
+
+    document
+    .getElementById(
+        "gameContainer"
+    ).style.display =
+    "none";
+
+    document
+    .getElementById(
+        "summary"
+    ).style.display =
+    "block";
+
+    let totalTime = 0;
+
+    questions.forEach(q=>{
+
+        totalTime +=
+        q.time || 0;
+
+    });
+
+    let average =
+        totalTime /
+        questions.length;
+
+    let percent =
+
+        (
+            sessionScore /
+            questions.length
+        ) * 100;
+
+    let html =
+
+        "<h3>" +
+
+        sessionScore +
+
+        "/" +
+
+        questions.length +
+
+        " Correct</h3>" +
+
+        "<p>" +
+
+        percent.toFixed(1) +
+
+        "% Accuracy</p>" +
+
+        "<p>Average Time: " +
+
+        average.toFixed(1) +
+
+        " sec</p>";
+
+    if(
+
+        questions.some(
+            q => !q.correct
+        )
+
+    ){
+
+        html +=
+
+        "<br><br>" +
+
+        "<button id='reviewErrorsBtn'>" +
+
+        "Review Incorrect Questions" +
+
+        "</button>";
+
+    }
+
+    document
+    .getElementById(
+        "summaryStats"
+    ).innerHTML =
+    html;
+
+    let reviewBtn =
+
+        document
+        .getElementById(
+            "reviewErrorsBtn"
+        );
+
+    if(reviewBtn){
+
+        reviewBtn
+        .addEventListener(
+            "click",
+            reviewErrors
+        );
+
+    }
+
+}
+
+
+/********************************************
+REVIEW INCORRECT
+********************************************/
+
+function reviewErrors(){
+
+    questions =
+
+    questions.filter(
+        q => !q.correct
+    );
+
+    currentQuestion = 0;
+
+    sessionScore = 0;
+
+    document
+    .getElementById(
+        "totalQuestions"
+    )
+    .innerHTML =
+    questions.length;
+
+    document
+    .getElementById(
+        "summary"
+    ).style.display =
+    "none";
+
+    document
+    .getElementById(
+        "gameContainer"
+    ).style.display =
+    "block";
+
+    loadQuestion(0);
+
+}
+
+/********************************************
+RETURN TO MENU
+********************************************/
+
+function returnToMenu(){
+
+    clearInterval(
+        timerInterval
+    );
+
+    currentQuestion = 0;
+    sessionScore = 0;
+    questions = [];
+
+    document
+    .getElementById(
+        "feedback"
+    ).innerHTML = "";
+
+    document
+    .getElementById(
+        "mouseNumberInput"
+    ).value = "";
+
+    document
+    .getElementById(
+        "questionNumber"
+    ).innerHTML = "1";
+
+    document
+    .getElementById(
+        "totalQuestions"
+    ).innerHTML = "10";
+
+    document
+    .getElementById(
+        "scoreLabel"
+    ).innerHTML = "0";
+
+    document
+    .getElementById(
+        "timer"
+    ).innerHTML = "0.0";
+
+    resetSelections();
+    renderSelections();
+    clearHighlights();
+
+    document
+    .getElementById(
+        "summary"
+    ).style.display =
+    "none";
+
+    document
+    .getElementById(
+        "gameContainer"
+    ).style.display =
+    "none";
+
+    document
+    .getElementById(
+        "startScreen"
+    ).style.display =
+    "block";
+
+}
+
+</script>
+
+<div id="summary">
+
+    <h2>
+        Session Summary
+    </h2>
+
+    <div id="summaryStats"></div>
+
+    <br>
+
+    <button
+        onclick="returnToMenu()">
+        Return To Menu
+    </button>
+
+</div>
+
+<div id="appFooter">
+    Created by Brandon Trejo | Version 1.0 | 2026
+</div>
+
+
+</body>
+
+</html>
